@@ -4,7 +4,9 @@
             <Header />
             <div class="mainBody">
                 <div class="aside">
-
+                    <span class="material-icons asideItem" @click="$router.push({ name: 'Settings' })">
+                        settings
+                    </span>
                 </div>
                 <div class="site">
                     <div class="siteHeader">
@@ -21,7 +23,7 @@
                                 settings
                             </span>
                         </div>
-                        <div class="siteBodyArticle">
+                        <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
                             <div>
                                 <div v-for="item in items" :key="item.id" class="siteBodyArticleItem">
                                     <span class="siteBodyArticleItemHeader">
@@ -77,7 +79,7 @@
             </div>
             <Footer />
         </div>
-        <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" />
+        <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
     </div>
     <div v-else-if="isAuth && isDetailItem">
         <div class="main">
@@ -108,13 +110,16 @@
                             <div>
                                 <div class="siteBodyArticleItem">
                                     <div class="siteBodyArticleSubitem">
-                                        <span class="siteBodyArticleItemHeader markupElement">
+                                        <span class="siteBodyArticleItemHeader">
                                             {{
                                                 activeItem.desc
                                             }}
                                         </span>    
                                         <span class="material-icons addItemBtn btn btn-primary" @click="isEditItemDialog = !isEditItemDialog">
                                             edit
+                                        </span>
+                                        <span class="material-icons addItemBtn btn btn-primary" @click="removeItem">
+                                            close
                                         </span>
                                     </div>
                                 </div>
@@ -135,7 +140,7 @@
             </div>
             <Footer />
         </div>
-        <EditItemDialog v-if="isEditItemDialog" :activeItem="activeItem" @editItem="editItemHandler" />
+        <EditItemDialog v-if="isEditItemDialog" :activeItem="activeItem" @editItem="editItemHandler" @closeEditItemDialog="closeEditItemDialogHandler" />
     </div>
     <Auth v-else :siteData="siteData" @setAuth="setAuthHandler" />    
 </template>
@@ -183,7 +188,12 @@ export default {
             siteData: {
                 name: 'Название_сайта',
                 password: 'lordres',
-                company: 'Lord Res Technologies'
+                company: 'Lord Res Technologies',
+                dbPrefix: '_prefix',
+                items: [],
+                theme: 'light',
+                pagination: true,
+                paginationItems: 5
             },
             isAddItemDialog: false,
             isDetailItem: false,
@@ -198,13 +208,32 @@ export default {
     mounted() {
         let simpleSiteData = window.localStorage.getItem('lordres-site-data')
         this.siteData = JSON.parse(simpleSiteData)
+        this.items = this.siteData.items
     },
     methods: {
-        editItemHandler(item) {
-            console.log(`editItemHandler: ${Object.values(item)}`)
-            this.items[this.items.findIndex((someItem, someItemIdx, someItems) => someItem.id === item.id ? someItem : {})] = item
-            
+        closeEditItemDialogHandler() {
             this.isEditItemDialog = false
+        },
+        closeAddItemDialogHandler() {
+            this.isAddItemDialog = false
+        },
+        removeItem() {
+            this.items = this.items.filter(someItem => someItem.id !== this.activeItem.id)
+            this.isDetailItem = false
+            this.siteData.items = this.items
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+            this.activeItem = null
+        },
+        editItemHandler(item) {
+            this.activeItem = item
+            this.items = this.items.map(someItem => someItem.id === item.id ? item : someItem)
+            this.isEditItemDialog = false
+            
+            this.siteData.items = this.items
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+
         },
         readItem(item) {
             this.isDetailItem = true
@@ -213,6 +242,11 @@ export default {
         addItemHandler(item) {
             this.items.push(item)
             this.isAddItemDialog = false
+            
+            this.siteData.items = this.items
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+
         },
         setAuthHandler(authToggler) {
             this.isAuth = authToggler
@@ -244,6 +278,11 @@ export default {
     .aside {
         width: 20%;
         background-color: rgb(200, 200, 200);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+        padding: 25px;
     }
     
     .site {
@@ -348,6 +387,7 @@ export default {
     .siteBodyAsideItem {
         color: rgb(75, 75, 175);
         font-size: 36px;
+        cursor: pointer;
     }
 
     .markupElement {
@@ -367,6 +407,12 @@ export default {
         font-weight: bolder;
         cursor: pointer;
         font-size: 24px;
+    }
+
+    .asideItem {
+        color: rgb(75, 75, 175);
+        font-size: 36px;
+        cursor: pointer;
     }
 
 </style>

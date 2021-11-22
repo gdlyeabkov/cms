@@ -1,23 +1,26 @@
 <template>
-    <div class="authForm">
-        <span class="authFormHeader">
-            Войдите на свой сайт        
-        </span>
-        <div class="authFormElement">
-            <span class="authFormLabel">
-                Логин
+    <div class="authFormGround">
+        <div class="authForm">
+            <img class="siteHeaderItem siteHeaderLogo" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png" alt="" />
+            <span class="authFormHeader">
+                Войдите на свой сайт        
             </span>
-            <input v-model="login" class="form-control" placeholder="Введите имя пользователя" type="text" />
+            <div class="authFormElement">
+                <span class="authFormLabel">
+                    Логин
+                </span>
+                <input v-model="login" class="form-control" placeholder="Введите имя пользователя" type="text" />
+            </div>
+            <div class="authFormElement">
+                <span class="authFormLabel">
+                    Пароль
+                </span>
+                <input v-model="password" class="form-control" placeholder="Введите пароль администратора" type="password" />
+            </div>
+            <button @click="loginToSite" class="w-25 btn btn-primary">
+                Вход
+            </button>
         </div>
-        <div class="authFormElement">
-            <span class="authFormLabel">
-                Пароль
-            </span>
-            <input v-model="password" class="form-control" placeholder="Введите пароль администратора" type="password" />
-        </div>
-        <button @click="loginToSite" class="btn btn-primary">
-            Вход
-        </button>
     </div>
 </template>
 
@@ -64,10 +67,10 @@ export default {
         display: flex;
         flex-direction: column;
         position: fixed;
-        top: calc(60% / 2 - 15%);
-        left: calc(60% / 2 - 15%);
-        width: 60%;
-        height: 60%;
+        top: calc(65% / 2 - 16%);
+        left: calc(60% / 2 - 10%);
+        width: 50%;
+        height: 65%;
         background-color: rgb(215, 215, 215);
         display: flex;
         flex-direction: column;
@@ -83,11 +86,20 @@ export default {
     .authFormLabel {
         display: flex;
         font-weight: bolder;
-        margin: 10px 0px; 
+        margin: 4px 0px; 
     }
 
     .authFormElement {
-        margin: 5px 0px;
+        margin: 10px 0px;
+    }
+
+    .authFormGround {
+        position: fixed;
+        top: 0px;
+        left: 0px;
+        background-color: rgb(235, 235, 235);
+        width: 100%;
+        height: 100%;
     }
 
 </style>

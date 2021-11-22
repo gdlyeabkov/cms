@@ -1,8 +1,16 @@
 <template>
     <div class="addItemDialogForm">
-        <span class="addItemDialogHeader">
-            Добавить новый элеменит
-        </span>
+        <div class="addItemDialogFormHeader">
+            <span>
+                &nbsp;
+            </span>
+            <span class="addItemDialogHeader">
+                Добавить новый элемент
+            </span>
+            <span class="material-icons closeDialogBtn btn btn-danger" @click="$emit('closeAddItemDialog')">
+                close
+            </span>
+        </div>
         <div class="addItemDialogElement">
             <span class="addItemDialogLabel">
                 Название элемента
@@ -37,7 +45,8 @@ export default {
         }
     },
     emits: [
-        'addItem'
+        'addItem',
+        'closeAddItemDialog'
     ],
     methods: {
         createItem() {
@@ -86,6 +95,25 @@ export default {
 
     .addItemDialogElement {
         margin: 5px 0px;
+    }
+
+    .addItemDialogFormHeader {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .closeDialogBtn {
+        color: rgb(255, 255, 255);
+        cursor: pointer;
+        font-weight: bolder;
+        border-radius: 100%;
+        width: 40px;
+        height: 40px;
+        align-self: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
 </style>

@@ -1,8 +1,16 @@
 <template>
     <div class="addItemDialogForm">
-        <span class="addItemDialogHeader">
-            Обновить текущий элеменит
-        </span>
+        <div class="editItemDialogFormHeader">
+            <span>
+                &nbsp;
+            </span>
+            <span class="addItemDialogHeader">
+                Обновить текущий элеменит
+            </span>
+            <span class="material-icons closeDialogBtn btn btn-danger" @click="$emit('closeEditItemDialog')">
+                close
+            </span>
+        </div>
         <div class="addItemDialogElement">
             <span class="addItemDialogLabel">
                 Название элемента
@@ -41,7 +49,8 @@ export default {
         }
     },
     emits: [
-        'editItem'
+        'editItem',
+        'closeEditItemDialog'
     ],
     mounted() {
         this.title = this.activeItem.title
@@ -93,6 +102,25 @@ export default {
 
     .addItemDialogElement {
         margin: 5px 0px;
+    }
+
+    .editItemDialogFormHeader {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .closeDialogBtn {
+        color: rgb(255, 255, 255);
+        cursor: pointer;
+        font-weight: bolder;
+        border-radius: 100%;
+        width: 40px;
+        height: 40px;
+        align-self: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
 </style>

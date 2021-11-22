@@ -72,7 +72,11 @@ app.get('/api/sites/create', (req, res) => {
                         name: req.query.sitename,
                         password: req.query.password,
                         company: req.query.sitecompany,
-                        dbPrefix: req.query.dbprefix
+                        dbPrefix: req.query.dbprefix,
+                        items: [],
+                        theme: 'light',
+                        pagination: true,
+                        paginationItems: 5
                     }
                     return res.json({ status: 'OK', siteData: siteData })
                 }
