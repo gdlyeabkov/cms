@@ -62,7 +62,9 @@ export default {
                 dbPrefix: '_prefix',
                 items: [],
                 theme: 'light',
-                pagination: true
+                pagination: true,
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
             },
             paginationItems: 5
         }  

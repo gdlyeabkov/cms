@@ -1,19 +1,13 @@
 <template>
-    <div v-if="!isDetailItem" >
-        <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
-        <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
-    </div>
-    <div v-else-if="isDetailItem">
-        <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
-        <EditItemDialog v-if="isEditItemDialog" :activeItem="activeItem" @editItem="editItemHandler" @closeEditItemDialog="closeEditItemDialogHandler" />
-    </div>
+    <Site v-if="!isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+    <Site v-else-if="isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
 </template>
 
 <script>
 
 import Site  from '@/components/Site.vue'
-import AddItemDialog from '@/components/AddItemDialog.vue'
-import EditItemDialog from '@/components/EditItemDialog.vue'
+// import AddItemDialog from '@/components/AddItemDialog.vue'
+// import EditItemDialog from '@/components/EditItemDialog.vue'
 
 export default {
     name: 'WebView',
@@ -55,7 +49,8 @@ export default {
                 items: [],
                 theme: 'light',
                 pagination: true,
-                paginationItems: 5
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
             },
             isAddItemDialog: false,
             isDetailItem: false,
@@ -133,8 +128,8 @@ export default {
     },
     components: {
         Site,
-        AddItemDialog,
-        EditItemDialog
+        // AddItemDialog,
+        // EditItemDialog
     }
 }
 </script>

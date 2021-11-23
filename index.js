@@ -87,7 +87,8 @@ app.get('/api/sites/create', (req, res) => {
                         items: [],
                         theme: 'light',
                         pagination: true,
-                        paginationItems: 5
+                        paginationItems: 5,
+                        logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
                     }
                     return res.json({ status: 'OK', siteData: siteData })
                 }

@@ -6,7 +6,13 @@
                     siteData.name
                 }}
             </span>
-            <img class="siteHeaderItem siteHeaderLogo" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png" alt="" />
+            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditNameDialog">
+                edit
+            </span>
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
+            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditLogoDialog">
+                edit
+            </span>
         </div>
         <div class="siteBody">
             <div class="siteBodyAside">
@@ -48,7 +54,7 @@
                             <span class="readItemMore siteBodyArticleSubitemElement markupElement">
                                 Читать полностью
                             </span>
-                            <span class="material-icons addItemBtn btn btn-primary" @click="setIsAddItemDialog">
+                            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsAddItemDialog">
                                 add
                             </span>
                         </div>
@@ -81,7 +87,7 @@
                     activeItem.title
                 }}
             </span>
-            <img class="siteHeaderItem siteHeaderLogo" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png" alt="" />
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
         </div>
         <div class="siteBody">
             <div class="siteBodyAside">
@@ -101,10 +107,10 @@
                                     activeItem.desc
                                 }}
                             </span>    
-                            <span class="material-icons addItemBtn btn btn-primary" @click="setIsEditItemDialog">
+                            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditItemDialog">
                                 edit
                             </span>
-                            <span class="material-icons addItemBtn btn btn-primary" @click="removeItem">
+                            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="removeItem">
                                 close
                             </span>
                         </div>
@@ -139,7 +145,8 @@ export default {
                 items: [],
                 theme: 'light',
                 pagination: true,
-                paginationItems: 5
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
             }
         },
         items: {
@@ -183,6 +190,10 @@ export default {
                 title: '',
                 desc: ''
             }
+        },
+        isAdmin: {
+            type: Boolean,
+            default: false
         }
     },
     data() {
@@ -195,9 +206,17 @@ export default {
         'setIsAddItemDialog',
         'setIsEditItemDialog',
         'removeItem',
-        'fromDetailToMain'
+        'fromDetailToMain',
+        'setIsEditNameDialog',
+        'setIsEditLogoDialog'
     ],
     methods: {
+        setIsEditLogoDialog() {
+            this.$emit('setIsEditLogoDialog')
+        },
+        setIsEditNameDialog() {
+            this.$emit('setIsEditNameDialog')
+        },
         fromDetailToMain() {
             this.$emit('fromDetailToMain')
         },
@@ -263,8 +282,9 @@ export default {
     }
 
     .siteHeaderLogo {
-        width: 200px;
-        
+        width: 100px;
+        border-radius: 15px;
+        /* height: 100px; */
     }
 
     .siteHeaderItem {

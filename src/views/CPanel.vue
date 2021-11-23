@@ -11,11 +11,13 @@
                         image
                     </span>
                 </div>
-                <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" />
             </div>
             <Footer />
         </div>
         <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
+        <EditNameDialog v-if="isEditNameDialog" :siteData="siteData" @editName="editNameHandler" @closeEditNameDialog="closeEditNameDialogHandler" />
+        <EditLogoDialog v-if="isEditLogoDialog" :siteData="siteData" @editLogo="editLogoHandler" @closeEditLogoDialog="closeEditLogoDialogHandler" />
     </div>
     <div v-else-if="isAuth && isDetailItem">
         <div class="main">
@@ -24,7 +26,7 @@
                 <div class="aside">
 
                 </div>
-                <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" />
             </div>
             <Footer />
         </div>
@@ -41,6 +43,8 @@ import Auth from '@/components/Auth.vue'
 import AddItemDialog from '@/components/AddItemDialog.vue'
 import EditItemDialog from '@/components/EditItemDialog.vue'
 import Site from '@/components/Site.vue'
+import EditNameDialog from '@/components/EditNameDialog.vue'
+import EditLogoDialog from '@/components/EditLogoDialog.vue'
 
 import * as jwt from 'jsonwebtoken'
 
@@ -84,7 +88,8 @@ export default {
                 items: [],
                 theme: 'light',
                 pagination: true,
-                paginationItems: 5
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
             },
             isAddItemDialog: false,
             isDetailItem: false,
@@ -95,27 +100,55 @@ export default {
             },
             isEditItemDialog: false,
             currentPage: 1,
+            isEditNameDialog: false,
+            isEditLogoDialog: false,
             token: window.localStorage.getItem('lordrestoken')
         }
     },
     mounted() {
         
         // jwt.verify(this.token, 'lordressecret', (err, decoded) => {
-        //     if (err) {
-        //         this.isAuth = false
-        //     } else {
+            // if (err) {
+                // this.isAuth = false
+            // } else {
                 // if (this.$route.query.currentpage !== null && this.$route.query.currentpage !== undefined) {
                     // this.currentPage = this.$route.query.currentpage
-                    this.isAuth = true
+                    // this.isAuth = true
                     let simpleSiteData = window.localStorage.getItem('lordres-site-data')
                     this.siteData = JSON.parse(simpleSiteData)
                     this.items = this.siteData.items
                 // }
-        //     }
+            // }
         // })
         
     },
     methods: {
+        editLogoHandler(siteLogo) {
+            this.isEditLogoDialog = false
+            
+            this.siteData.logo = siteLogo
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditLogoDialogHandler() {
+            this.isEditLogoDialog = false
+        },
+        setIsEditLogoDialogHandler() {
+            this.isEditLogoDialog = !this.isEditLogoDialog
+        },
+        closeEditNameDialogHandler() {
+            this.isEditNameDialog = false
+        },
+        setIsEditNameDialogHandler() {
+            this.isEditNameDialog = !this.isEditNameDialog
+        },
+        editNameHandler(siteName) {
+            this.isEditNameDialog = false
+            
+            this.siteData.name = siteName
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
         fromDetailToMainHandler() {
             this.isDetailItem = false
         },
@@ -177,7 +210,9 @@ export default {
         Auth,
         AddItemDialog,
         EditItemDialog,
-        Site
+        Site,
+        EditNameDialog,
+        EditLogoDialog
     }
 }
 </script>
