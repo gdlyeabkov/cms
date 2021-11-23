@@ -2,6 +2,9 @@
     <div>
         <Header />
         <div class="main">
+            <span class="material-icons siteBodyAsideItem" @click="$router.push({ name: 'CPanel' })">
+                logout
+            </span>
             <div class="settingsItem">
                 <input id="theme" @change="setTheme" type="checkbox" :checked="siteData.theme === 'light' ?
                         true
@@ -28,7 +31,7 @@
                 </label>
             </div>
             <div class="settingsItem">
-                <input id="paginationItems" :value="siteData.paginationItems" :disabled="!siteData.pagination" @change="setPaginationItems" type="number" />
+                <input id="paginationItems" v-model="paginationItems" :disabled="!siteData.pagination" @change="setPaginationItems" type="number" />
                 <label class="settingsItemLabel" for="paginationItems">
                     {{
                         siteData.pagination ?
@@ -60,22 +63,25 @@ export default {
                 items: [],
                 theme: 'light',
                 pagination: true
-            }
+            },
+            paginationItems: 5
         }  
     },
     mounted() {
         let simpleSiteData = window.localStorage.getItem('lordres-site-data')
         this.siteData = JSON.parse(simpleSiteData)
+        this.paginationItems = this.siteData.paginationItems
     },
     methods: {
         setPaginationItems() {
-            if(this.siteData.paginationItems === 5) {
-                this.siteData.paginationItems = 10
-            } else if(this.siteData.paginationItems === 10) {
-                this.siteData.paginationItems = 15
-            } else if(this.siteData.paginationItems === 15) {
-                this.siteData.paginationItems = 5
-            }
+            // if(this.siteData.paginationItems === 5) {
+            //     this.siteData.paginationItems = 10
+            // } else if(this.siteData.paginationItems === 10) {
+            //     this.siteData.paginationItems = 15
+            // } else if(this.siteData.paginationItems === 15) {
+            //     this.siteData.paginationItems = 5
+            // }
+            this.siteData.paginationItems = this.paginationItems
             let strinableSiteData = JSON.stringify(this.siteData)
             window.localStorage.setItem('lordres-site-data', strinableSiteData)
         },
@@ -121,6 +127,12 @@ export default {
         color: rgb(255, 255, 255);
         margin: 0px 15px;
         font-weight: bolder;
+    }
+
+    .siteBodyAsideItem {
+        color: rgb(75, 125, 125);
+        font-size: 36px;
+        cursor: pointer;
     }
 
 </style>

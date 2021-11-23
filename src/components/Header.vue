@@ -14,7 +14,8 @@ export default {
     name: 'Header',
     methods: {
         visitSite() {
-            window.open('http://localhost:4000/api/sites/get')
+            // window.open('http://localhost:4000/api/sites/get')
+            this.$router.push({ name: 'WebView' })
         }
     }
 }

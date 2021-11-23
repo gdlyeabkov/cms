@@ -1,12 +1,23 @@
-const jwt = require('jsonwebtoken')
+const fs = require('fs')
 const bcrypt = require('bcrypt')
-const saltRounds = 10;
+const saltRounds = 10
 
 const mongoose = require('mongoose')
 const express = require('express')
 const path = require('path')
 const serveStatic = require('serve-static')
 const app = express()
+
+const multer  = require('multer')
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'sites/media')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+})
+const upload = multer({ storage: storage })
 
 app.use('/', serveStatic(path.join(__dirname, '/dist')))
 
@@ -94,6 +105,49 @@ app.get('/api/sites/get', (req, res) => {
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
     
     return res.sendFile(__dirname + `/sites/index.html`)
+
+})
+
+app.post('/api/sites/media/upload', upload.single('myFile'), (req, res) => {
+    
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    
+    return res.redirect('http://localhost:8080/')
+
+})
+
+app.get('/api/sites/media/info', (req, res) => {
+    
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    
+    fs.readdir(`./sites/media/`, (err, mediaFiles) => {
+        if (err) {
+            return res.json({
+                status: 'Error'
+            })
+        }
+        return res.json({
+            status: 'OK',
+            mediaFiles: mediaFiles
+        })
+    })
+
+})
+
+app.get('/api/sites/media/get', (req, res) => {
+    
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    
+    return res.sendFile(__dirname + `/sites/media/${req.query.mediafile}`)
 
 })
 

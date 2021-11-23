@@ -51,7 +51,7 @@ export default {
     methods: {
         loginToSite() {
             if (this.login === 'admin' && this.password === this.siteData.password) {
-                this.$emit('setAuth', true)
+                this.$emit('setAuth', true, this.login)
             }
         }
     }

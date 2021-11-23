@@ -1,51 +1,22 @@
 <template>
-    <div v-if=" isAuth && !isDetailItem">
-        <div class="main">
-            <Header />
-            <div class="mainBody">
-                <div class="aside">
-                    <span class="material-icons asideItem" @click="$router.push({ name: 'Settings' })">
-                        settings
-                    </span>
-                    <span class="material-icons asideItem" @click="$router.push({ name: 'Media' })">
-                        image
-                    </span>
-                </div>
-                <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
-            </div>
-            <Footer />
-        </div>
+    <div v-if="!isDetailItem" >
+        <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
         <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
     </div>
-    <div v-else-if="isAuth && isDetailItem">
-        <div class="main">
-            <Header />
-            <div class="mainBody">
-                <div class="aside">
-
-                </div>
-                <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
-            </div>
-            <Footer />
-        </div>
+    <div v-else-if="isDetailItem">
+        <Site :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
         <EditItemDialog v-if="isEditItemDialog" :activeItem="activeItem" @editItem="editItemHandler" @closeEditItemDialog="closeEditItemDialogHandler" />
     </div>
-    <Auth v-else :siteData="siteData" @setAuth="setAuthHandler" />    
 </template>
 
 <script>
 
-import Header from '@/components/Header.vue'
-import Footer from '@/components/Footer.vue'
-import Auth from '@/components/Auth.vue'
+import Site  from '@/components/Site.vue'
 import AddItemDialog from '@/components/AddItemDialog.vue'
 import EditItemDialog from '@/components/EditItemDialog.vue'
-import Site from '@/components/Site.vue'
-
-import * as jwt from 'jsonwebtoken'
 
 export default {
-    name: 'CPanel',
+    name: 'WebView',
     data() {
         return {
             items: [
@@ -99,21 +70,10 @@ export default {
         }
     },
     mounted() {
-        
-        // jwt.verify(this.token, 'lordressecret', (err, decoded) => {
-        //     if (err) {
-        //         this.isAuth = false
-        //     } else {
-                // if (this.$route.query.currentpage !== null && this.$route.query.currentpage !== undefined) {
-                    // this.currentPage = this.$route.query.currentpage
-                    this.isAuth = true
-                    let simpleSiteData = window.localStorage.getItem('lordres-site-data')
-                    this.siteData = JSON.parse(simpleSiteData)
-                    this.items = this.siteData.items
-                // }
-        //     }
-        // })
-        
+        // this.isAuth = true
+        let simpleSiteData = window.localStorage.getItem('lordres-site-data')
+        this.siteData = JSON.parse(simpleSiteData)
+        this.items = this.siteData.items
     },
     methods: {
         fromDetailToMainHandler() {
@@ -164,7 +124,7 @@ export default {
         },
         setAuthHandler(authToggler, webmaster) {
             console.log(`выключаю вход`)
-            this.isAuth = authToggler
+            // this.isAuth = authToggler
             this.token = jwt.sign({
                 webmaster: webmaster
             }, 'lordressecret', { expiresIn: '5m' })
@@ -172,12 +132,9 @@ export default {
         }
     },
     components: {
-        Header,
-        Footer,
-        Auth,
+        Site,
         AddItemDialog,
-        EditItemDialog,
-        Site
+        EditItemDialog
     }
 }
 </script>
@@ -206,7 +163,7 @@ export default {
     }
     
     .site {
-        width: 80%;
+        width: 100%;
         height: 100%;
         background-color: rgb(100, 100, 100);
     }
