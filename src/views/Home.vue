@@ -24,6 +24,24 @@
       </label>
       <input v-model="prefixDB" placeholder="Введите префикс таблиц в базе данных" type="text" class="form-control" />
     </div>
+    <div class="inputControl">
+      <label class="inputFieldLabel" for="">
+        Слоган компании
+      </label>
+      <input v-model="tagline" placeholder="Введите слоган вашей компании" type="text" class="form-control" />
+    </div>
+    <div class="inputControl">
+      <label class="inputFieldLabel" for="">
+        Специализация вашей компании
+      </label>
+      <input v-model="business" placeholder="Введите чем занимается ваша компания" type="text" class="form-control" />
+    </div>
+    <div class="inputControl">
+      <label class="inputFieldLabel" for="">
+        Где находится ваш главный офис
+      </label>
+      <input v-model="resident" placeholder="Введите местоположения вашего корпуса" type="text" class="form-control" />
+    </div>
     <button class="btn btn-success" @click="createSite">
       Создать сайт
     </button>
@@ -41,7 +59,10 @@ export default {
       siteName: '',
       password: '',
       siteCompany: '',
-      prefixDB: ''
+      prefixDB: '',
+      tagline: '',
+      business: '',
+      resident: ''
     }
   },
   mounted() {
@@ -51,7 +72,7 @@ export default {
   },
   methods: {
     createSite() {
-      fetch(`http://localhost:4000/api/sites/create/?sitename=${this.siteName}&password=${this.password}&sitecompany=${this.siteCompany}&dbprefix=${this.prefixDB}`, {
+      fetch(`http://localhost:4000/api/sites/create/?sitename=${this.siteName}&password=${this.password}&sitecompany=${this.siteCompany}&dbprefix=${this.prefixDB}&tagline=${this.tagline}&business=${this.business}&resident=${this.resident}`, {
         mode: 'cors',
         method: 'GET'
       }).then(response => response.body).then(rb  => {
@@ -102,7 +123,7 @@ export default {
     min-height: 100%;
     width: 100%;
     align-items: center;
-    position: fixed;
+    position: relative;
     top: 0px;
     left: 0px;
   }

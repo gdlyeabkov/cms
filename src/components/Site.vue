@@ -1,6 +1,6 @@
 <template>
-    <div class="site" v-if="!isDetailItem">
-        <div class="siteHeader">
+    <div class="site" v-if="!isDetailItem && activeTab === 'main'">
+        <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
             <span class="siteHeaderItem siteHeaderLabel">
                 {{
                     siteData.name
@@ -15,9 +15,9 @@
             </span>
         </div>
         <div class="siteBody">
-            <div class="siteBodyAside">
-                <span class="material-icons siteBodyAsideItem">
-                    settings
+            <div class="siteBodyAside" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(225, 225, 225)' : 'rgb(175, 175, 175)'}`">
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'about'">
+                    menu_book
                 </span>
             </div>
             <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
@@ -80,8 +80,8 @@
             </span>
         </div>
     </div>
-    <div class="site" v-else-if="isDetailItem">
-        <div class="siteHeader">
+    <div class="site" v-else-if="isDetailItem && activeTab === 'main'">
+        <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
             <span class="siteHeaderItem siteHeaderLabel">
                 {{
                     activeItem.title
@@ -94,9 +94,6 @@
                 <span class="material-icons siteBodyAsideItem" @click="fromDetailToMain">
                     logout
                 </span>
-                <span class="material-icons siteBodyAsideItem">
-                    settings
-                </span>
             </div>
             <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
                 <div>
@@ -106,7 +103,7 @@
                                 {{
                                     activeItem.desc
                                 }}
-                            </span>    
+                            </span>
                             <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditItemDialog">
                                 edit
                             </span>
@@ -114,6 +111,94 @@
                                 close
                             </span>
                         </div>
+                        <div class="comments">
+                            <div class="comment" v-for="comment in activeItem.comments" :key="comment">
+                                <span>
+                                    {{
+                                        comment.message
+                                    }}
+                                </span>
+                            </div>
+                        </div>
+                        <textarea class="form-control" placeholder="Введите сообщение" v-model="message"></textarea>
+                        <div class="sendMessageBtnContainer ">
+                            <button class="btn btn-primary w-25" @click="sendMessage">
+                                Отправить
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="siteFooter">
+            <span>
+                &copy;
+            </span>
+            <span>
+                {{
+                    siteData.company
+                }}
+            </span>
+        </div>
+    </div>
+    <div class="site" v-else-if="activeTab === 'about'">
+        <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
+            <span class="siteHeaderItem siteHeaderLabel">
+                {{
+                    'ПОмощ'
+                }}
+            </span>
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
+        </div>
+        <div class="siteBody">
+            <div class="siteBodyAside">
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'main'">
+                    logout
+                </span>
+            </div>
+            <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
+                <div>
+                    <div class="siteBodyArticleItem">
+                        <div class="siteBodyArticleSubitemColumn">
+                            <div class="siteBodyArticleSubitem">
+                                <span class="siteBodyArticleItemHeader">
+                                    {{
+                                        siteData.name
+                                    }}
+                                </span>
+                            </div>
+                            <div class="siteBodyArticleSubitem">
+                                <span class="siteBodyArticleItemContent">
+                                    {{
+                                        siteData.about.tagline
+                                    }}
+                                </span>
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditTaglineDialog">
+                                    edit
+                                </span>
+                            </div>    
+                            <div class="siteBodyArticleSubitem">
+                                <span class="siteBodyArticleItemContent">
+                                    {{
+                                        siteData.about.business
+                                    }}
+                                </span>
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
+                                    edit
+                                </span>
+                            </div>
+                            <div class="siteBodyArticleSubitem">
+                                <span class="siteBodyArticleItemContent">
+                                    {{
+                                        siteData.about.resident
+                                    }}
+                                </span>
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
+                                    edit
+                                </span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -188,7 +273,8 @@ export default {
             default: {
                 id: 1,
                 title: '',
-                desc: ''
+                desc: '',
+                comments: []
             }
         },
         isAdmin: {
@@ -198,7 +284,9 @@ export default {
     },
     data() {
         return {
-            currentPage: 1
+            currentPage: 1,
+            message: '',
+            activeTab: 'main'
         }
     },
     emits: [
@@ -208,9 +296,31 @@ export default {
         'removeItem',
         'fromDetailToMain',
         'setIsEditNameDialog',
-        'setIsEditLogoDialog'
+        'setIsEditLogoDialog',
+        'setIsEditTaglineDialog',
+        'setIsEditBusinessDialog',
+        'setIsEditResidentDialog'
     ],
     methods: {
+        setIsEditResidentDialog() {
+            this.$emit('setIsEditResidentDialog')
+        },
+        setIsEditBusinessDialog() {
+            this.$emit('setIsEditBusinessDialog')
+        },
+        setIsEditTaglineDialog() {
+            this.$emit('setIsEditTaglineDialog')
+        },
+        sendMessage() {
+            this.activeItem.comments.push({
+                author: 'Admin',
+                message: this.message
+            })
+            this.message = ''
+            this.siteData.items = this.items
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
         setIsEditLogoDialog() {
             this.$emit('setIsEditLogoDialog')
         },
@@ -400,6 +510,41 @@ export default {
         cursor: pointer;
         opacity: 1.0;
         margin: 0px 10px;
+    }
+
+    .comment {
+        margin: 5px 0px;
+        border-radius: 8px;
+        width: 75%;
+        min-height: 50px;
+        background-color: rgb(255, 255, 255);
+        color: rgb(0, 0, 0);
+        font-weight: bolder;
+        box-sizing: border-box;
+        padding: 5px 15px;
+    }
+
+    .comments {
+        margin: 25px 0px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sendMessageBtnContainer {
+        display: flex;
+        justify-content: center;
+        margin: 15px;
+    }
+
+    .siteBodyArticleSubitemColumn {
+        flex-direction: column;
+        display: flex;
+    }
+
+    .siteBodyArticleItemContent {
+        color: rgb(0, 0, 0);
+        font-weight: bolder;
+        margin: 15px 0px;
     }
 
 </style>

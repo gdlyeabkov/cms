@@ -1,63 +1,67 @@
 <template>
     <div class="addItemDialogForm">
-        <div class="addItemDialogFormHeader">
+        <div class="editItemDialogFormHeader">
             <span>
                 &nbsp;
             </span>
             <span class="addItemDialogHeader">
-                Добавить новый элемент
+                Обновить слоган компании
             </span>
-            <span class="material-icons closeDialogBtn btn btn-danger" @click="$emit('closeAddItemDialog')">
+            <span class="material-icons closeDialogBtn btn btn-danger" @click="$emit('closeEditTaglineDialog')">
                 close
             </span>
         </div>
         <div class="addItemDialogElement">
             <span class="addItemDialogLabel">
-                Название элемента
+                Слоган компании
             </span>
-            <input v-model="title" class="form-control" placeholder="Введите название элемента" type="text" />
+            <input v-model="tagline" class="form-control" placeholder="Введите слоган компании" type="text" />
         </div>
-        <div class="addItemDialogElement">
-            <span class="addItemDialogLabel">
-                Описание элемента
-            </span>
-            <input v-model="desc" class="form-control" placeholder="Введите описание элемента" type="text" />
-        </div>
-        <button @click="createItem" class="btn btn-primary">
-            добавить
+        <button @click="editTagline" class="btn btn-primary">
+            обновить
         </button>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'AddItemDialog',
+    name: 'EditTaglineDialog',
     data() {
         return {
-            title: '',
-            desc: ''
+            tagline: ''
         }
     },
     props: {
-        items: {
-            type: Array,
-            default: []
+        siteData: {
+            type: Object,
+            default: {
+                name: 'Название_сайта',
+                password: 'lordres',
+                company: 'Lord Res Technologies',
+                dbPrefix: '_prefix',
+                items: [],
+                theme: 'light',
+                pagination: true,
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                about: {
+                    tagline: '',
+                    business: '',
+                    resident: ''
+                }
+            }
         }
     },
     emits: [
-        'addItem',
-        'closeAddItemDialog'
+        'editTagline',
+        'closeEditTaglineDialog'
     ],
+    mounted() {
+        this.tagline = this.siteData.about.tagline
+    },
     methods: {
-        createItem() {
-            let pk = this.items.length + 1
-            let newItem = {
-                id: pk,
-                title: this.title,
-                desc: this.desc,
-                comments: []
-            }
-            this.$emit('addItem', newItem)
+        editTagline() {
+            this.$emit('editTagline', this.tagline)
         }
     }
 }
@@ -98,7 +102,7 @@ export default {
         margin: 5px 0px;
     }
 
-    .addItemDialogFormHeader {
+    .editItemDialogFormHeader {
         display: flex;
         width: 100%;
         justify-content: space-between;

@@ -88,7 +88,12 @@ app.get('/api/sites/create', (req, res) => {
                         theme: 'light',
                         pagination: true,
                         paginationItems: 5,
-                        logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
+                        logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                        about: {
+                            business: req.query.business,
+                            tagline: req.query.tagline,
+                            resident: req.query.resident
+                        }
                     }
                     return res.json({ status: 'OK', siteData: siteData })
                 }

@@ -32,7 +32,7 @@
 
 <script>
 export default {
-    name: 'EditNameDialog',
+    name: 'EditLogoDialog',
     data() {
         return {
             logo: '',

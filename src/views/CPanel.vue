@@ -11,13 +11,16 @@
                         image
                     </span>
                 </div>
-                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" />
             </div>
             <Footer />
         </div>
         <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
         <EditNameDialog v-if="isEditNameDialog" :siteData="siteData" @editName="editNameHandler" @closeEditNameDialog="closeEditNameDialogHandler" />
         <EditLogoDialog v-if="isEditLogoDialog" :siteData="siteData" @editLogo="editLogoHandler" @closeEditLogoDialog="closeEditLogoDialogHandler" />
+        <EditTaglineDialog v-if="isEditTaglineDialog" :siteData="siteData" @editTagline="editTaglineHandler" @closeEditTaglineDialog="closeEditTaglineDialogHandler" />
+        <EditBusinessDialog v-if="isEditBusinessDialog" :siteData="siteData" @editBusiness="editBusinessHandler" @closeEditBusinessDialog="closeEditBusinessDialogHandler" />
+        <EditResidentDialog v-if="isEditResidentDialog" :siteData="siteData" @editResident="editResidentHandler" @closeEditResidentDialog="closeEditResidentDialogHandler" />
     </div>
     <div v-else-if="isAuth && isDetailItem">
         <div class="main">
@@ -45,6 +48,9 @@ import EditItemDialog from '@/components/EditItemDialog.vue'
 import Site from '@/components/Site.vue'
 import EditNameDialog from '@/components/EditNameDialog.vue'
 import EditLogoDialog from '@/components/EditLogoDialog.vue'
+import EditTaglineDialog from '@/components/EditTaglineDialog.vue'
+import EditBusinessDialog from '@/components/EditBusinessDialog.vue'
+import EditResidentDialog from '@/components/EditResidentDialog.vue'
 
 import * as jwt from 'jsonwebtoken'
 
@@ -102,6 +108,9 @@ export default {
             currentPage: 1,
             isEditNameDialog: false,
             isEditLogoDialog: false,
+            isEditResidentDialog: false,
+            isEditTaglineDialog: false,
+            isEditBusinessDialog: false,
             token: window.localStorage.getItem('lordrestoken')
         }
     },
@@ -123,6 +132,45 @@ export default {
         
     },
     methods: {
+        editResidentHandler(resident) {
+            this.isEditResidentDialog = false
+            
+            this.siteData.about.resident = resident
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditResidentDialogHandler() {
+            this.isEditResidentDialog = false
+        },
+        setIsEditResidentDialogHandler() {
+            this.isEditResidentDialog = !this.isEditResidentDialog
+        },
+        editBusinessHandler(business) {
+            this.isEditBusinessDialog = false
+            
+            this.siteData.about.business = business
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditBusinessDialogHandler() {
+            this.isEditBusinessDialog = false
+        },
+        setIsEditBusinessDialogHandler() {
+            this.isEditBusinessDialog = !this.isEditBusinessDialog
+        },
+        editTaglineHandler(tagline) {
+            this.isEditTaglineDialog = false
+            
+            this.siteData.about.tagline = tagline
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditTaglineDialogHandler() {
+            this.isEditTaglineDialog = false
+        },
+        setIsEditTaglineDialogHandler() {
+            this.isEditTaglineDialog = !this.isEditTaglineDialog
+        },
         editLogoHandler(siteLogo) {
             this.isEditLogoDialog = false
             
@@ -212,7 +260,10 @@ export default {
         EditItemDialog,
         Site,
         EditNameDialog,
-        EditLogoDialog
+        EditLogoDialog,
+        EditTaglineDialog,
+        EditBusinessDialog,
+        EditResidentDialog
     }
 }
 </script>
