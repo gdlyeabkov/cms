@@ -13,6 +13,11 @@
             <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditLogoDialog">
                 edit
             </span>
+            <span class="siteHeaderItem webmaster siteHeaderLabel">
+                {{
+                    webmaster
+                }}
+            </span>
         </div>
         <div class="siteBody">
             <div class="siteBodyAside" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(225, 225, 225)' : 'rgb(175, 175, 175)'}`">
@@ -134,6 +139,11 @@
                         </div>
                         <div class="comments">
                             <div class="comment" v-for="comment in activeItem.comments" :key="comment">
+                                <span class="author">
+                                    {{
+                                        comment.author
+                                    }}
+                                </span>
                                 <span>
                                     {{
                                         comment.message
@@ -462,6 +472,10 @@ export default {
         isAdmin: {
             type: Boolean,
             default: false
+        },
+        webmaster: {
+            type: String,
+            default: 'admin'
         }
     },
     data() {
@@ -545,8 +559,12 @@ export default {
         },
         sendMessage() {
             
+            // this.activeItem.comments.push({
+            //     author: 'Admin',
+            //     message: this.message
+            // })
             this.activeItem.comments.push({
-                author: 'Admin',
+                author: this.webmaster,
                 message: this.message
             })
             this.message = ''
@@ -575,6 +593,11 @@ export default {
         },
         readItem(item) {
             this.$emit('readItem', item)
+        }
+    },
+    watch: {
+        webmaster(user) {
+            console.log(`webmaster: ${user}`)
         }
     }
 }
@@ -756,6 +779,8 @@ export default {
         font-weight: bolder;
         box-sizing: border-box;
         padding: 5px 15px;
+        display: flex;
+        flex-direction: column;
     }
 
     .comments {
@@ -786,6 +811,19 @@ export default {
         margin: auto;
         height: 300px;
         background-color: rgb(255, 255, 255);
+    }
+
+    .webmaster {
+        /* align-self: flex-end; */
+        display: flex;
+        width: 100%;
+        justify-content: flex-end;
+        flex-direction: row;
+    }
+
+    .author {
+        font-size: 10px;
+        align-self: flex-end;
     }
 
 </style>

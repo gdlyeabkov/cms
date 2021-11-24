@@ -25,6 +25,9 @@
 </template>
 
 <script>
+
+// const bcrypt = require('bcrypt')
+
 export default {
     name: 'Auth',
     data() {
@@ -51,45 +54,51 @@ export default {
     methods: {
         loginToSite() {
             
-            if ((this.login === 'admin' && this.password === this.siteData.password) || this.login !== 'admin') {
-                this.$emit('setAuth', true, this.login)
-            } else {
-                alert('не удается войти')
-            }
+            // if ((this.login === 'admin' && this.password === this.siteData.password) || this.login !== 'admin') {
+            //     this.$emit('setAuth', true, this.login)
+            // } else {
+            //     alert('не удается войти')
+            // }
 
-            // fetch(`http://localhost:4000/api/sites/users/check/?userlogin=${this.login}&userpassword=${this.password}`, {
-            //     mode: 'cors',
-            //     method: 'GET'
-            // }).then(response => response.body).then(rb  => {
-            //     const reader = rb.getReader()
-            //     return new ReadableStream({
-            //     start(controller) {
-            //         function push() {
-            //         reader.read().then( ({done, value}) => {
-            //             if (done) {
-            //             console.log('done', done);
-            //             controller.close();
-            //             return;
-            //             }
-            //             controller.enqueue(value);
-            //             console.log(done, value);
-            //             push();
-            //         })
-            //         }
-            //         push();
-            //     }
-            //     });
-            // }).then(stream => {
-            //     return new Response(stream, { headers: { "Content-Type": "text/html" } }).text();
-            // })
-            // .then(async result => {
-            //     if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).status === 'OK') {
-            //         this.$emit('setAuth', true, this.login)
-            //     } else {
-            //         alert('не удается войти')
-            //     }
+            fetch(`http://localhost:4000/api/sites/users/check/?userlogin=${this.login}&userpassword=${this.password}`, {
+            
+            // fetch(`http://localhost:4000/api/sites/users/get/`, {
+                mode: 'cors',
+                method: 'GET'
+            }).then(response => response.body).then(rb  => {
+                const reader = rb.getReader()
+                return new ReadableStream({
+                start(controller) {
+                    function push() {
+                    reader.read().then( ({done, value}) => {
+                        if (done) {
+                        console.log('done', done);
+                        controller.close();
+                        return;
+                        }
+                        controller.enqueue(value);
+                        console.log(done, value);
+                        push();
+                    })
+                    }
+                    push();
+                }
+                });
+            }).then(stream => {
+                return new Response(stream, { headers: { "Content-Type": "text/html" } }).text();
+            })
+            .then(async result => {
+                
+                // if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).db[0].users.filter(user => user.login === this.login && bcrypt.compareSync(this.password, user.password))) {
+                
+                if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).status === 'OK') {
+                // if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).db[0].users.map(user => user.login).includes(this.login)) {
+                    this.$emit('setAuth', true, this.login)
+                } else {
+                    alert('не удается войти')
+                }
 
-            // })
+            })
             
         }
     }

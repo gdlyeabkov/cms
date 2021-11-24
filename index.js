@@ -107,8 +107,7 @@ app.get('/api/sites/create', (req, res) => {
                                     }
                             }, (err, model) => {
                             
-                                console.log(`collections: ${collections}; model: ${req.query.sitename}Model`)
-        
+                                
                                 let siteData = {
                                     name: req.query.sitename,
                                     password: req.query.password,
@@ -146,7 +145,6 @@ app.get('/api/sites/articles/add', (req, res) => {
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
     
-    console.log(`add: Number(req.query.dbaccesstoken): ${Number(req.query.dbaccesstoken)}; req.query.articletitle: ${req.query.articletitle}; req.query.articledesc: ${req.query.articledesc}; `)
     collections[Number(req.query.dbaccesstoken)].update({  },
         { $push: 
             { 
@@ -160,8 +158,6 @@ app.get('/api/sites/articles/add', (req, res) => {
                 
             }
     }, (err, model) => {
-        console.log(`collections: ${collections}; Number(req.query.dbaccesstoken): ${Number(req.query.dbaccesstoken)}`)
-    
         return res.json({ status: 'OK', dbAccessToken: Number(req.query.dbaccesstoken) })    
     })
 
@@ -200,35 +196,35 @@ app.get('/api/sites/users/check', (req,res)=>{
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
    
-    let query =  collections[collections.length - 1].find({}, function(err, db){
+    let query =  collections[collections.length - 1].findOne({}, function(err, db){
         if (err || db == undefined || db == null){
             return res.json({ status: 'Error' })
         } else {
-            // console.log(`db:  keys: ${Object.keys(new Map(db.users))}; values: ${Object.values(new Map(db.users))};`)
-            // console.log(`db:  keys: ${new Map(db.users).keys().join(',')}; values: ${new Map(db.users).values().join(',')};`)
             let possibleUsers = []
-                // possibleUsers = Array.of(new Map(db.users)).filter(user => {
-                possibleUsers = Array.of(db.users).filter(user => {
-            // if (new Map(db.users).length >= 1) {
-                // possibleUsers = new Map(db.users).filter(user => {
-                // possibleUsers = db.users.filter(user => {
-                // possibleUsers = new Map(db).get('users').filter(user => {
-                // let possibleUsers = db.users.filter(user => {
-                    console.log(`user.login: ${new Map(user).get('login')}; user.password: ${user.password}`)
-                    return user.login === req.query.userlogin
-                })
-            // }
-            let currentUser = possibleUsers.length >= 1 ? possibleUsers[0] : { login: 'unknown', password: 'unknown' }
-            console.log(`Object.keys(currentUser): ${Object.keys(currentUser)}; Object.values(currentUser): ${Object.values(currentUser)};`)
-            let passwordCheck = bcrypt.compareSync(req.query.userpassword, currentUser.password) && req.query.userpassword !== ''
-
-            if(req.query.userlogin == currentUser.login && passwordCheck){
+            possibleUsers = db.users.filter(user => {
+                return new Map(user).get('login') === req.query.userlogin && bcrypt.compareSync(req.query.userpassword, new Map(user).get('password'))
+            })
+            if(possibleUsers.length >= 1) {
                 return res.json({ "status": "OK" })
             } else {
                 return res.json({ "status": "Error" })
             }
+            
         }
     })
+})
+
+app.get('/api/sites/users/get', (req, res) => {
+    
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+   
+    let query = collections[collections.length - 1].find({  }, function(err, db) {
+        return res.json({ "status": "OK", 'db': db })
+    })
+
 })
 
 
