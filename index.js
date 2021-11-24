@@ -19,6 +19,16 @@ const storage = multer.diskStorage({
 })
 const upload = multer({ storage: storage })
 
+const nodemailer = require("nodemailer")
+
+var transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: 'gdlyeabkov@gmail.com',
+        pass: 'reversepassword'
+    }
+})
+
 app.use('/', serveStatic(path.join(__dirname, '/dist')))
 
 app.use(express.urlencoded({ extended: true }))
@@ -73,10 +83,16 @@ app.get('/api/sites/create', (req, res) => {
         if(siteExists){
             return res.json({ status: 'Error' })
         } else {
+            
+            let prefix = req.query.dbprefix
+            if (prefix[prefix.length - 1] !== '_') {
+                prefix = `${prefix}_`
+            }
+            
             let encodedPassword = "#"
             const salt = bcrypt.genSalt(saltRounds)
             encodedPassword = bcrypt.hashSync(req.query.password, saltRounds)
-            const site = new SiteModel({ name: req.query.sitename, password: encodedPassword, company: req.query.sitecompany, prefixDB: req.query.dbprefix })
+            const site = new SiteModel({ name: req.query.sitename, password: encodedPassword, company: req.query.sitecompany, prefixDB: prefix })
             site.save(function (err) {
                 if (err) {
                     return res.json({ "status": "Error" })
@@ -85,7 +101,7 @@ app.get('/api/sites/create', (req, res) => {
                     let DBSchema = new mongoose.Schema({
                         users: [mongoose.Schema.Types.Map],
                         articles: [mongoose.Schema.Types.Map],
-                    }, { collection : `my${req.query.sitename}s` })
+                    }, { collection : `${prefix}my${req.query.sitename}s` })
                     
                     let dbModelName = req.query.sitename
                     let DBModel = mongoose.model(`${dbModelName[0].toUpperCase()}${dbModelName.split('').filter((siteLetter, idx) => idx !== 0).join('')}Model`, DBSchema)
@@ -112,7 +128,7 @@ app.get('/api/sites/create', (req, res) => {
                                     name: req.query.sitename,
                                     password: req.query.password,
                                     company: req.query.sitecompany,
-                                    dbPrefix: req.query.dbprefix,
+                                    dbPrefix: prefix,
                                     items: [],
                                     theme: 'light',
                                     pagination: true,
@@ -123,7 +139,17 @@ app.get('/api/sites/create', (req, res) => {
                                         tagline: req.query.tagline,
                                         resident: req.query.resident
                                     },
-                                    dbAccessToken: collections.length - 1
+                                    dbAccessToken: collections.length - 1,
+                                    feedback: {
+                                        inputFieldPlaceholder: 'Введите ваш вопрос',
+                                        sendlabelBtn: 'Оставить вопрос',
+                                        questions: []
+                                    },
+                                    admin: {
+                                        login: 'admin'
+                                    },
+                                    notifications: true,
+                                    mail: true
                                 }
                             
                                 return res.json({ status: 'OK', siteData: siteData, dbAccessToken: collections.length - 1 })    
@@ -145,7 +171,8 @@ app.get('/api/sites/articles/add', (req, res) => {
     res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
     
-    collections[Number(req.query.dbaccesstoken)].update({  },
+    collections[collections.length - 1].update({  },
+    // collections[Number(req.query.dbaccesstoken)].update({  },
         { $push: 
             { 
                 articles: [
@@ -158,7 +185,8 @@ app.get('/api/sites/articles/add', (req, res) => {
                 
             }
     }, (err, model) => {
-        return res.json({ status: 'OK', dbAccessToken: Number(req.query.dbaccesstoken) })    
+        return res.json({ status: 'OK', dbAccessToken: Number(collections[collections.length - 1]) })
+        // return res.json({ status: 'OK', dbAccessToken: Number(req.query.dbaccesstoken) })    
     })
 
     
@@ -280,6 +308,33 @@ app.get('/api/sites/media/get', (req, res) => {
     
     return res.sendFile(__dirname + `/sites/media/${req.query.mediafile}`)
 
+})
+
+app.get('/api/sites/mail', async (req, res) => {
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    res.setHeader("Access-Control-Allow-Headers", "X-Requested-With, X-Access-Token, X-Socket-ID, Content-Type");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+    
+    let query = collections[collections.length - 1].find({ })
+    await query.exec((err, clients) => {
+        if (err) {
+            return res.json({ status: 'Error' })
+        }
+        clients[0].users.map((client) => {
+            let mailOptions = {
+                from: `"${'gdlyeabkov'}" <${"gdlyeabkov"}>`,
+                to: `${client.login}`,
+                subject: `${req.query.sitename} оповещение! ${req.query.title}`,
+                html: `<h3>Вы подписаны на оповещения ${req.query.sitename}. Посетите наш сайт, чтобы посмотреть новинки.</h3><br/><p>${req.query.title}.</p>`,
+            }
+            transporter.sendMail(mailOptions, function (err, info) {
+            })
+        })
+        
+    })
+    return res.json({ status: 'OK' })
 })
 
 app.get('**', (req, res) => {

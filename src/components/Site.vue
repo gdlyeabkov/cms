@@ -6,17 +6,20 @@
                     siteData.name
                 }}
             </span>
-            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditNameDialog">
+            <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditNameDialog">
                 edit
             </span>
             <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
-            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditLogoDialog">
+            <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditLogoDialog">
                 edit
             </span>
             <span class="siteHeaderItem webmaster siteHeaderLabel">
                 {{
                     webmaster
                 }}
+            </span>
+            <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditAdminLoginDialog">
+                edit
             </span>
         </div>
         <div class="siteBody">
@@ -42,7 +45,15 @@
             <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
                 <div>
                     <div v-if="items.length >= 1">
-                        <div v-for="item in items.filter((item, itemIdx) => !siteData.pagination || (itemIdx >= siteData.paginationItems * currentPage - siteData.paginationItems && itemIdx < currentPage * siteData.paginationItems))" :key="item.id" class="siteBodyArticleItem">
+                        <span class="material-icons sortToggler" @click="sortToggler = !sortToggler">
+                            {{
+                                sortToggler ?
+                                    'expand_more'
+                                :
+                                    'expand_less'
+                            }}
+                        </span>
+                        <div v-for="item in !sortToggler ? items.filter((item, itemIdx) => !siteData.pagination || (itemIdx >= siteData.paginationItems * currentPage - siteData.paginationItems && itemIdx < currentPage * siteData.paginationItems)) : items.filter((item, itemIdx) => !siteData.pagination || (itemIdx >= siteData.paginationItems * currentPage - siteData.paginationItems && itemIdx < currentPage * siteData.paginationItems)).reverse()" :key="item.id" class="siteBodyArticleItem">
                             <span class="siteBodyArticleItemHeader">
                                 {{
                                     item.title
@@ -65,7 +76,7 @@
                             Еще не опубликована ни 1 запись...
                         </span>
                     </div>
-                    <div class="siteBodyArticleItem" v-if="isAdmin">
+                    <div class="siteBodyArticleItem" v-if="isAdmin && siteData.admin.login === webmaster">
                         <span class="siteBodyArticleItemHeader markupElement">
                             {{
                                 `Новость ${items.length + 1}`
@@ -80,7 +91,7 @@
                             <span class="readItemMore siteBodyArticleSubitemElement markupElement">
                                 Читать полностью
                             </span>
-                            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsAddItemDialog">
+                            <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsAddItemDialog">
                                 add
                             </span>
                         </div>
@@ -114,6 +125,11 @@
                 }}
             </span>
             <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
+            <span class="siteHeaderItem webmaster siteHeaderLabel">
+                {{
+                    webmaster
+                }}
+            </span>
         </div>
         <div class="siteBody">
             <div class="siteBodyAside">
@@ -130,11 +146,20 @@
                                     activeItem.desc
                                 }}
                             </span>
-                            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditItemDialog">
+                            <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditItemDialog">
                                 edit
                             </span>
-                            <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="removeItem">
+                            <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="removeItem">
                                 close
+                            </span>
+                            <span v-if="webmaster.length >= 1" :title="`${activeItem.likes} лайков`" class="material-icons addItemBtn btn btn-primary" @click="likeItem">
+                                favorite
+                            </span>
+                            <span class="m-5">
+                                Сообщений: 
+                                {{
+                                    activeItem.comments.length        
+                                }}
                             </span>
                         </div>
                         <div class="comments">
@@ -156,12 +181,6 @@
                             <button :disabled="webmaster.length <= 0"  class="btn btn-primary w-25" @click="sendMessage">
                                 Отправить
                             </button>
-                            <span class="m-2">
-                                Сообщений: 
-                                {{
-                                    activeItem.comments.length        
-                                }}
-                            </span>
                         </div>
                     </div>
                 </div>
@@ -210,7 +229,7 @@
                                         siteData.about.tagline
                                     }}
                                 </span>
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditTaglineDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditTaglineDialog">
                                     edit
                                 </span>
                             </div>    
@@ -220,7 +239,7 @@
                                         siteData.about.business
                                     }}
                                 </span>
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
                                     edit
                                 </span>
                             </div>
@@ -230,7 +249,7 @@
                                         siteData.about.resident
                                     }}
                                 </span>
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
                                     edit
                                 </span>
                             </div>
@@ -279,13 +298,13 @@
                             </div>
                             <div class="siteBodyArticleSubitem">
                                 <input placeholder="Введите email" v-model="login" type="text" class="form-control w-50 m-3">
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditTaglineDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditTaglineDialog">
                                     edit
                                 </span>
                             </div>    
                             <div class="siteBodyArticleSubitem">
                                 <input placeholder="Введите пароль" v-model="password" type="password" class="form-control w-50 m-3">
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
                                     edit
                                 </span>
                             </div>
@@ -293,10 +312,15 @@
                                 <button class="btn btn-primary w-25 m-3" @click="createUser">
                                     Зарегестрироваться
                                 </button>
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
                                     edit
                                 </span>
                             </div>
+                            <span class="errors m-3">
+                                {{
+                                    createUserErrors
+                                }}
+                            </span>
                         </div>
 
                     </div>
@@ -382,16 +406,18 @@
                     <div class="siteBodyArticleItem">
                         <div class="siteBodyArticleSubitemColumn">
                             <div class="siteBodyArticleSubitem">
-                                <input placeholder="Введите ваш вопрос" v-model="feedback" type="text" class="form-control w-50 m-3">
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
+                                <input :placeholder="siteData.feedback.inputFieldPlaceholder" v-model="feedback" type="text" class="form-control w-50 m-3">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditFeedbackPlaceholderDialog">
                                     edit
                                 </span>
                             </div>
                             <div class="siteBodyArticleSubitem">
                                 <button class="btn btn-primary w-25 m-3" @click="askQuestion">
-                                    Оставить вопрос
+                                    {{
+                                        siteData.feedback.sendlabelBtn
+                                    }}
                                 </button>
-                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
+                                <span v-if="isAdmin && siteData.admin.login === webmaster" class="material-icons addItemBtn btn btn-primary" @click="setIsEditFeedbackLabelBtnDialog">
                                     edit
                                 </span>
                             </div>
@@ -429,7 +455,8 @@ export default {
                 theme: 'light',
                 pagination: true,
                 paginationItems: 5,
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                notifications: true
             }
         },
         items: {
@@ -491,7 +518,9 @@ export default {
             activeTab: 'main',
             login: '',
             password: '',
-            feedback: ''
+            feedback: '',
+            sortToggler: false,
+            createUserErrors: ''
         }
     },
     emits: [
@@ -504,11 +533,36 @@ export default {
         'setIsEditLogoDialog',
         'setIsEditTaglineDialog',
         'setIsEditBusinessDialog',
-        'setIsEditResidentDialog'
+        'setIsEditResidentDialog',
+        'setIsEditFeedbackLabelBtnDialog',
+        'setIsEditFeedbackPlaceholderDialog',
+        'setIsEditAdminLoginDialog',
     ],
     methods: {
+        likeItem() {
+            this.activeItem.likes++
+            this.siteData.items = this.items
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        setIsEditAdminLoginDialog() {
+            this.$emit('setIsEditAdminLoginDialog')
+        },
+        setIsEditFeedbackLabelBtnDialog() {
+            this.$emit('setIsEditFeedbackLabelBtnDialog')
+        },
+        setIsEditFeedbackPlaceholderDialog() {
+            this.$emit('setIsEditFeedbackPlaceholderDialog')
+        },
         askQuestion() {
-            
+            this.siteData.feedback.questions.push({
+                asker: this.webmaster,
+                question: this.feedback
+            })
+            this.feedback = ''
+            let strinableSiteData = JSON.stringify(this.siteData)
+            this.activeTab = 'main'
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
         },
         setAuthenticate() {
             if(this.webmaster.length <= 0) {
@@ -516,7 +570,9 @@ export default {
             } else {
                 this.$emit('setWebmaster', '')
                 // this.webmaster = ''
-                alert('Вы покидаете сайт')
+                if(this.siteData.notifications) {
+                    alert('Вы покидаете сайт')
+                }
             }
         },
         createUser() {
@@ -550,7 +606,10 @@ export default {
                 if(JSON.parse(result).status === 'OK') {
                     this.activeTab = 'main'
                 } else {
-                    alert('не удается добавить пользователя')
+                    if(this.siteData.notifications) {
+                        alert('Не удается добавить пользователя')
+                        this.createUserErrors = 'Не удается добавить пользователя'
+                    }
                 }
 
             })
@@ -832,6 +891,15 @@ export default {
     .author {
         font-size: 10px;
         align-self: flex-end;
+    }
+
+    .sortToggler {
+        cursor: pointer;
+    }
+
+    .errors {
+        color: rgb(225, 0, 0);
+        font-weight: bolder;
     }
 
 </style>

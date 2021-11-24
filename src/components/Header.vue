@@ -3,7 +3,7 @@
         <button @click="visitSite" class="btn btn-primary">
             Посмотреть сайт
         </button>
-        <div @click="$router.push({ name: 'Settings' })" class="siteLogo">
+        <div @click="$router.push({ name: 'Settings' })" class="siteLogo" :style="`background-image: url('${siteData.logo}');`">
             
         </div>
     </div>
@@ -12,6 +12,23 @@
 <script>
 export default {
     name: 'Header',
+    props: {
+        siteData: {
+            type: Object,
+            required: false,
+            default: () => ({
+                name: 'Название_сайта',
+                password: 'lordres',
+                company: 'Lord Res Technologies',
+                dbPrefix: '_prefix',
+                items: [],
+                theme: 'light',
+                pagination: true,
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
+            })
+        }
+    },
     methods: {
         visitSite() {
             // window.open('http://localhost:4000/api/sites/get')

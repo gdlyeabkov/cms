@@ -26,6 +26,11 @@
         <button @click="createItem" class="btn btn-primary">
             добавить
         </button>
+        <span class="errors">
+            {{
+                addItemErrors
+            }}
+        </span>
     </div>
 </template>
 
@@ -35,7 +40,8 @@ export default {
     data() {
         return {
             title: '',
-            desc: ''
+            desc: '',
+            addItemErrors: ''
         }
     },
     props: {
@@ -46,7 +52,7 @@ export default {
         siteData: {
             type: Object,
             default: {
-                
+                notifications: true   
             }
         },
     },
@@ -89,11 +95,15 @@ export default {
                         id: pk,
                         title: this.title,
                         desc: this.desc,
-                        comments: []
+                        comments: [],
+                        likes: 0
                     }
                     this.$emit('addItem', newItem)
                 } else {
-                    alert('не удается добавить статью')
+                    if(this.siteData.notifications) {
+                        alert('не удается добавить статью')
+                        this.addItemErrors = 'не удается добавить статью'
+                    }
                 }
             })
             
@@ -155,5 +165,11 @@ export default {
         align-items: center;
         justify-content: center;
     }
+
+    .errors {
+        color: rgb(225, 0, 0);
+        font-weight: bolder;
+    }
+
 
 </style>

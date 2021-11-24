@@ -27,6 +27,11 @@
         <button @click="editLogo" class="btn btn-primary">
             обновить
         </button>
+        <span class="errors">
+            {{
+                mediaErrors
+            }}
+        </span>
     </div>
 </template>
 
@@ -36,7 +41,8 @@ export default {
     data() {
         return {
             logo: '',
-            media: []
+            media: [],
+            mediaErrors: ''
         }
     },
     props: {
@@ -51,7 +57,8 @@ export default {
                 theme: 'light',
                 pagination: true,
                 paginationItems: 5,
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                notifications: true
             }
         }
     },
@@ -91,7 +98,10 @@ export default {
                 this.media = JSON.parse(result).mediaFiles
                 this.logo = this.siteData.logo
             } else {
-              alert('Не удается получить медиа')
+                if(this.siteData.notifications) {
+                    alert('Не удается получить медиа')
+                    this.mediaErrors = 'Не удается получить медиа'
+                }
             }
         })
         
@@ -197,5 +207,11 @@ export default {
     .uploadedActiveMediaItem {
         box-shadow: 0px 0px 25px rgb(255, 255, 255);
     }
+
+    .errors {
+        color: rgb(225, 0, 0);
+        font-weight: bolder;
+    }
+
 
 </style>

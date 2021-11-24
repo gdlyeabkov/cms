@@ -1,7 +1,7 @@
 <template>
     <div>
         <Header />
-        <div class="main">
+        <div class="main" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(100, 100, 100)' : 'rgb(65, 40, 50)'}`">
             <span class="material-icons siteBodyAsideItem" @click="$router.push({ name: 'CPanel' })">
                 logout
             </span>
@@ -41,6 +41,48 @@
                     }}
                 </label>
             </div>
+            <div class="settingsItem">
+                <input v-model="oldPassword" type="password" placeholder="Старый пароль" class="from-control" />
+                <label class="settingsItemLabel" for="pagination">
+                    {{
+                        'Обновите пароль'
+                    }}
+                </label>
+            </div>
+            <div class="settingsItem">
+                <input v-model="newPassword" type="password" placeholder="Новый пароль" class="from-control" />
+                <button class="btn btn-primary m-2" @click="setPassword">
+                    Сменить пароль
+                </button>
+            </div>
+            <span class="errors">
+                {{
+                    passwordErrors
+                }}
+            </span>
+            <div class="settingsItem">
+                <input id="notifications" @change="setNotifications" type="checkbox" :checked="siteData.notifications" />
+                <label class="settingsItemLabel" for="notifications">
+                    {{
+                        siteData.notifications ?
+                            'Выключить уведомления'
+                        :
+                            'Включить уведомления'
+                    }}
+                </label>
+            </div>
+            <div class="settingsItem">
+                <input id="mail" @change="setSendMail" type="checkbox" :checked="siteData.mail" />
+                <label class="settingsItemLabel" for="mail">
+                    {{
+                        siteData.mail ?
+                            'Не отправлять оповещения'
+                        :
+                            'Посылать оповещения'
+                    }}
+                </label>
+            </div>
+
         </div>
         <Footer />
     </div>
@@ -64,9 +106,14 @@ export default {
                 theme: 'light',
                 pagination: true,
                 paginationItems: 5,
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                notifications: true,
+                mail: true
             },
-            paginationItems: 5
+            paginationItems: 5,
+            oldPassword: '',
+            newPassword: '',
+            passwordErrors: ''
         }  
     },
     mounted() {
@@ -75,6 +122,30 @@ export default {
         this.paginationItems = this.siteData.paginationItems
     },
     methods: {
+        setSendMail() {
+
+        },
+        setNotifications() {
+            this.siteData.notifications = !this.siteData.notifications
+            if (!this.siteData.notifications) {
+                this.passwordErrors = ''
+            }
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        setPassword() {
+            if (this.siteData.password === this.oldPassword) {
+                this.siteData.password = this.newPassword
+                let strinableSiteData = JSON.stringify(this.siteData)
+                window.localStorage.setItem('lordres-site-data', strinableSiteData)
+                this.$router.push({ name: 'Home' })
+            } else {
+                if(this.siteData.notifications) {
+                    alert('Неправильно указан пароль')
+                    this.passwordErrors = 'Неправильно указан пароль'
+                }
+            }
+        },
         setPaginationItems() {
             // if(this.siteData.paginationItems === 5) {
             //     this.siteData.paginationItems = 10
@@ -135,6 +206,11 @@ export default {
         color: rgb(75, 125, 125);
         font-size: 36px;
         cursor: pointer;
+    }
+
+    .errors {
+        color: rgb(225, 0, 0);
+        font-weight: bolder;
     }
 
 </style>

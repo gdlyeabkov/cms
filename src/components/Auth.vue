@@ -1,7 +1,7 @@
 <template>
-    <div class="authFormGround">
-        <div class="authForm">
-            <img class="siteHeaderItem siteHeaderLogo" src="https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png" alt="" />
+    <div class="authFormGround" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(235, 235, 235)' : 'rgb(35, 35, 75)'}`">
+        <div class="authForm" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(215, 215, 215)' : 'rgb(15, 35, 25)'}`">
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" width="100px" :alt="siteData.logo" />
             <span class="authFormHeader">
                 Войдите на свой сайт        
             </span>
@@ -20,6 +20,11 @@
             <button @click="loginToSite" class="w-25 btn btn-primary">
                 Вход
             </button>
+            <span class="errors">
+                {{
+                    authErrors
+                }}
+            </span>
         </div>
     </div>
 </template>
@@ -33,18 +38,27 @@ export default {
     data() {
         return {
             login: 'admin',
-            password: ''
+            password: '',
+            authErrors: ''
         }
     },
     props: {
         siteData: {
+            type: Object,
             default: {
-                type: Object,
-                default: {
-                    name: 'Название_сайта',
-                    password: 'lordres',
-                    company: 'Lord Res Technologies'
-                }
+                name: 'Название_сайта',
+                password: 'lordres',
+                company: 'Lord Res Technologies',
+                dbPrefix: '_prefix',
+                items: [],
+                theme: 'light',
+                pagination: true,
+                paginationItems: 5,
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                admin: {
+                    login: 'admin'
+                },
+                notifications: true
             }
         }
     },
@@ -91,11 +105,14 @@ export default {
                 
                 // if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).db[0].users.filter(user => user.login === this.login && bcrypt.compareSync(this.password, user.password))) {
                 
-                if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).status === 'OK') {
+                if ((this.login === this.siteData.admin.login && this.password === this.siteData.password) || (JSON.parse(result).status === 'OK' && this.login !== 'admin')) {
                 // if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).db[0].users.map(user => user.login).includes(this.login)) {
                     this.$emit('setAuth', true, this.login)
                 } else {
-                    alert('не удается войти')
+                    if(this.siteData.notifications) {
+                        alert('Не удается войти')
+                        this.authErrors = 'Не удается войти'
+                    }
                 }
 
             })
@@ -148,5 +165,11 @@ export default {
         width: 100%;
         height: 100%;
     }
+
+    .errors {
+        color: rgb(225, 0, 0);
+        font-weight: bolder;
+    }
+
 
 </style>

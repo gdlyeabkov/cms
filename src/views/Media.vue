@@ -23,6 +23,11 @@
                         <button class="btn btn-danger saveMediaBtn" type="submit">
                             Сохранить медиа
                         </button>
+                        <span class="errors">
+                            {{
+                                mediaErrors
+                            }}
+                        </span>
                     </div>
                 </form>
             </div>
@@ -47,9 +52,11 @@ export default {
                 dbPrefix: '_prefix',
                 items: [],
                 theme: 'light',
-                pagination: true
+                pagination: true,
+                notifications: true
             },
-            media: []
+            media: [],
+            mediaErrors: ''
         }  
     },
     mounted() {
@@ -85,7 +92,10 @@ export default {
                 this.siteData = JSON.parse(simpleSiteData)
                 this.media = JSON.parse(result).mediaFiles
             } else {
-              alert('Не удается получить медиа')
+                if(this.siteData.notifications) {
+                    alert('Не удается получить медиа')
+                    this.mediaErrors = 'Не удается получить медиа'
+                }
             }
         })
 
@@ -186,5 +196,11 @@ export default {
         display: flex;
         flex-direction: column;
     }
+
+    .errors {
+        color: rgb(225, 0, 0);
+        font-weight: bolder;
+    }
+
 
 </style>

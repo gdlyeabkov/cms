@@ -1,7 +1,7 @@
 <template>
     <div v-if=" isAuth && !isDetailItem">
         <div class="main">
-            <Header />
+            <Header :siteData="siteData" />
             <div class="mainBody">
                 <div class="aside">
                     <span class="material-icons asideItem" @click="$router.push({ name: 'Settings' })">
@@ -11,7 +11,7 @@
                         image
                     </span>
                 </div>
-                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" @setIsEditFeedbackPlaceholderDialog="setIsEditFeedbackPlaceholderDialogHandler" @setIsEditFeedbackLabelBtnDialog="setIsEditFeedbackLabelBtnDialogHandler" @setIsEditAdminLoginDialog="setIsEditAdminLoginDialogHandler" />
             </div>
             <Footer />
         </div>
@@ -21,6 +21,9 @@
         <EditTaglineDialog v-if="isEditTaglineDialog" :siteData="siteData" @editTagline="editTaglineHandler" @closeEditTaglineDialog="closeEditTaglineDialogHandler" />
         <EditBusinessDialog v-if="isEditBusinessDialog" :siteData="siteData" @editBusiness="editBusinessHandler" @closeEditBusinessDialog="closeEditBusinessDialogHandler" />
         <EditResidentDialog v-if="isEditResidentDialog" :siteData="siteData" @editResident="editResidentHandler" @closeEditResidentDialog="closeEditResidentDialogHandler" />
+        <EditFeedbackPlaceholderDialog v-if="isEditFeedbackPlaceholderDialog" :siteData="siteData" @editPlaceholder="editPlaceholderHandler" @closeEditPlaceholderDialog="closeEditFeedbackPlaceholderDialogHandler" />
+        <EditFeedbackLabelBtnDialog v-if="isEditFeedbackLabelBtnDialog" :siteData="siteData" @editLabelBtn="editLabelBtnHandler" @closeEditLabelBtnDialog="closeEditFeedbackLabelBtnDialogHandler" />
+        <EditAdminLoginDialog v-if="isEditAdminLoginDialog" :siteData="siteData" @editAdminLogin="editAdminLoginHandler" @closeEditAdminLoginDialog="closeEditAdminLoginDialogHandler" />
     </div>
     <div v-else-if="isAuth && isDetailItem">
         <div class="main">
@@ -29,7 +32,7 @@
                 <div class="aside">
 
                 </div>
-                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" @setIsEditFeedbackPlaceholderDialog="setIsEditFeedbackPlaceholderDialogHandler" @setIsEditFeedbackLabelBtnDialog="setIsEditFeedbackLabelBtnDialogHandler" @setIsEditAdminLoginDialog="setIsEditAdminLoginDialogHandler" />
             </div>
             <Footer />
         </div>
@@ -51,6 +54,9 @@ import EditLogoDialog from '@/components/EditLogoDialog.vue'
 import EditTaglineDialog from '@/components/EditTaglineDialog.vue'
 import EditBusinessDialog from '@/components/EditBusinessDialog.vue'
 import EditResidentDialog from '@/components/EditResidentDialog.vue'
+import EditFeedbackLabelBtnDialog from '@/components/EditFeedbackLabelBtnDialog.vue'
+import EditFeedbackPlaceholderDialog from '@/components/EditFeedbackPlaceholderDialog.vue'
+import EditAdminLoginDialog from '@/components/EditAdminLoginDialog.vue'
 
 import * as jwt from 'jsonwebtoken'
 
@@ -102,7 +108,15 @@ export default {
                     business: '',
                     resident: ''
                 },
-                dbAccessToken: '0'
+                dbAccessToken: '0',
+                feedback: {
+                    inputFieldPlaceholder: 'Введите ваш вопрос',
+                    sendlabelBtn: 'Оставить вопрос',
+                    questions: []
+                },
+                admin: {
+                    login: 'admin'
+                }
             },
             isAddItemDialog: false,
             isDetailItem: false,
@@ -118,6 +132,9 @@ export default {
             isEditResidentDialog: false,
             isEditTaglineDialog: false,
             isEditBusinessDialog: false,
+            isEditFeedbackPlaceholderDialog: false,
+            isEditFeedbackLabelBtnDialog: false,
+            isEditAdminLoginDialog: false,
             token: window.localStorage.getItem('lordrestoken')
         }
     },
@@ -139,6 +156,48 @@ export default {
         
     },
     methods: {
+        editAdminLoginHandler(login) {
+            this.isEditAdminLoginDialog = false
+            
+            this.siteData.admin.login = login
+            
+            this.webmaster = login
+            
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditAdminLoginDialogHandler() {
+            this.isEditAdminLoginDialog = false
+        },
+        setIsEditAdminLoginDialogHandler() {
+            this.isEditAdminLoginDialog = !this.isEditAdminLoginDialog
+        },
+        editLabelBtnHandler(label) {
+            this.isEditFeedbackLabelBtnDialog = false
+            
+            this.siteData.feedback.sendlabelBtn = label
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditFeedbackLabelBtnDialogHandler() {
+            this.isEditFeedbackLabelBtnDialog = false
+        },
+        setIsEditFeedbackLabelBtnDialogHandler() {
+            this.isEditFeedbackLabelBtnDialog = !this.isEditFeedbackLabelBtnDialog
+        },
+        editPlaceholderHandler(placeholder) {
+            this.isEditFeedbackPlaceholderDialog = false
+            
+            this.siteData.feedback.inputFieldPlaceholder = placeholder
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditFeedbackPlaceholderDialogHandler() {
+            this.isEditFeedbackPlaceholderDialog = false
+        },
+        setIsEditFeedbackPlaceholderDialogHandler() {
+            this.isEditFeedbackPlaceholderDialog = !this.isEditFeedbackPlaceholderDialog
+        },
         setWebmasterHandler(user) {
             this.webmaster = user
         },
@@ -252,6 +311,46 @@ export default {
             let strinableSiteData = JSON.stringify(this.siteData)
             window.localStorage.setItem('lordres-site-data', strinableSiteData)
 
+            if (this.siteData.mail) {
+                
+                fetch(`http://localhost:4000/api/sites/mail/?sitename=${this.siteData.name}&title=${item.title}`, {
+                    mode: 'cors',
+                    method: 'GET'
+                }).then(response => response.body).then(rb  => {
+                    const reader = rb.getReader()
+                    return new ReadableStream({
+                        start(controller) {
+                            function push() {
+                                reader.read().then( ({done, value}) => {
+                                    if (done) {
+                                        console.log('done', done);
+                                        controller.close();
+                                        return;
+                                    }
+                                    controller.enqueue(value);
+                                    console.log(done, value);
+                                    push();
+                                })
+                            }
+                            push();
+                        }
+                    });
+                }).then(stream => {
+                    return new Response(stream, { headers: { "Content-Type": "text/html" } }).text();
+                })
+                .then(async result => {
+                    if(JSON.parse(result).status === 'OK') {
+                        if(this.siteData.notifications) {
+                            alert('Подписчики успешно получили оповещения')                            
+                        }
+                    } else {
+                        if(this.siteData.notifications) {
+                            alert('Не удается послать оповещение')                            
+                        }
+                    }
+                })
+            }
+
         },
         setAuthHandler(authToggler, webmaster) {
             console.log(`выключаю вход`)
@@ -274,7 +373,10 @@ export default {
         EditLogoDialog,
         EditTaglineDialog,
         EditBusinessDialog,
-        EditResidentDialog
+        EditResidentDialog,
+        EditFeedbackPlaceholderDialog,
+        EditFeedbackLabelBtnDialog,
+        EditAdminLoginDialog
     }
 }
 </script>
