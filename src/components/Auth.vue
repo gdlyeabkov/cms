@@ -50,9 +50,47 @@ export default {
     ],
     methods: {
         loginToSite() {
-            if (this.login === 'admin' && this.password === this.siteData.password) {
+            
+            if ((this.login === 'admin' && this.password === this.siteData.password) || this.login !== 'admin') {
                 this.$emit('setAuth', true, this.login)
+            } else {
+                alert('не удается войти')
             }
+
+            // fetch(`http://localhost:4000/api/sites/users/check/?userlogin=${this.login}&userpassword=${this.password}`, {
+            //     mode: 'cors',
+            //     method: 'GET'
+            // }).then(response => response.body).then(rb  => {
+            //     const reader = rb.getReader()
+            //     return new ReadableStream({
+            //     start(controller) {
+            //         function push() {
+            //         reader.read().then( ({done, value}) => {
+            //             if (done) {
+            //             console.log('done', done);
+            //             controller.close();
+            //             return;
+            //             }
+            //             controller.enqueue(value);
+            //             console.log(done, value);
+            //             push();
+            //         })
+            //         }
+            //         push();
+            //     }
+            //     });
+            // }).then(stream => {
+            //     return new Response(stream, { headers: { "Content-Type": "text/html" } }).text();
+            // })
+            // .then(async result => {
+            //     if ((this.login === 'admin' && this.password === this.siteData.password) || JSON.parse(result).status === 'OK') {
+            //         this.$emit('setAuth', true, this.login)
+            //     } else {
+            //         alert('не удается войти')
+            //     }
+
+            // })
+            
         }
     }
 }

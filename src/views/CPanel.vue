@@ -15,7 +15,7 @@
             </div>
             <Footer />
         </div>
-        <AddItemDialog v-if="isAddItemDialog" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
+        <AddItemDialog v-if="isAddItemDialog" :siteData="siteData" :items="items" @addItem="addItemHandler" @closeAddItemDialog="closeAddItemDialogHandler" />
         <EditNameDialog v-if="isEditNameDialog" :siteData="siteData" @editName="editNameHandler" @closeEditNameDialog="closeEditNameDialogHandler" />
         <EditLogoDialog v-if="isEditLogoDialog" :siteData="siteData" @editLogo="editLogoHandler" @closeEditLogoDialog="closeEditLogoDialogHandler" />
         <EditTaglineDialog v-if="isEditTaglineDialog" :siteData="siteData" @editTagline="editTaglineHandler" @closeEditTaglineDialog="closeEditTaglineDialogHandler" />
@@ -95,7 +95,13 @@ export default {
                 theme: 'light',
                 pagination: true,
                 paginationItems: 5,
-                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png'
+                logo: 'https://upload.wikimedia.org/wikipedia/commons/d/dd/Wordpress-logo_2005.png',
+                about: {
+                    tagline: '',
+                    business: '',
+                    resident: ''
+                },
+                dbAccessToken: '0'
             },
             isAddItemDialog: false,
             isDetailItem: false,

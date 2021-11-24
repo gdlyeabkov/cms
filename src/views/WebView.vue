@@ -1,13 +1,17 @@
 <template>
-    <Site v-if="!isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
-    <Site v-else-if="isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+    <Site v-if="isAuth && !isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :isAuth="isAuth" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+    <Site v-else-if="isAuth && isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :isAuth="isAuth" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+    <Auth v-else :siteData="siteData" @setAuth="setAuthHandler" />    
 </template>
 
 <script>
 
+import Auth  from '@/components/Auth.vue'
 import Site  from '@/components/Site.vue'
 // import AddItemDialog from '@/components/AddItemDialog.vue'
 // import EditItemDialog from '@/components/EditItemDialog.vue'
+
+import * as jwt from 'jsonwebtoken'
 
 export default {
     name: 'WebView',
@@ -119,7 +123,7 @@ export default {
         },
         setAuthHandler(authToggler, webmaster) {
             console.log(`выключаю вход`)
-            // this.isAuth = authToggler
+            this.isAuth = authToggler
             this.token = jwt.sign({
                 webmaster: webmaster
             }, 'lordressecret', { expiresIn: '5m' })
@@ -128,6 +132,7 @@ export default {
     },
     components: {
         Site,
+        Auth
         // AddItemDialog,
         // EditItemDialog
     }

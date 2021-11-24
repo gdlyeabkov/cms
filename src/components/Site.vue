@@ -19,27 +19,48 @@
                 <span class="material-icons siteBodyAsideItem" @click="activeTab = 'about'">
                     menu_book
                 </span>
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'location'">
+                    location_on
+                </span>
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'feedback'">
+                    contact_support
+                </span>
+                <span class="material-icons siteBodyAsideItem" @click="setAuthenticate">
+                    {{
+                        !isAdmin ?
+                            'logout'
+                        :
+                            'add'
+                    }}
+                </span>
             </div>
             <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
                 <div>
-                    <div v-for="item in items.filter((item, itemIdx) => !siteData.pagination || (itemIdx >= siteData.paginationItems * currentPage - siteData.paginationItems && itemIdx < currentPage * siteData.paginationItems))" :key="item.id" class="siteBodyArticleItem">
-                        <span class="siteBodyArticleItemHeader">
-                            {{
-                                item.title
-                            }}
-                        </span>
-                        <div class="siteBodyArticleSubitem">
-                            <span class="siteBodyArticleItemDesc siteBodyArticleSubitemElement">
+                    <div v-if="items.length >= 1">
+                        <div v-for="item in items.filter((item, itemIdx) => !siteData.pagination || (itemIdx >= siteData.paginationItems * currentPage - siteData.paginationItems && itemIdx < currentPage * siteData.paginationItems))" :key="item.id" class="siteBodyArticleItem">
+                            <span class="siteBodyArticleItemHeader">
                                 {{
-                                    item.desc
+                                    item.title
                                 }}
                             </span>
-                            <span class="readItemMore siteBodyArticleSubitemElement" @click="readItem(item)">
-                                Читать полностью
-                            </span>
+                            <div class="siteBodyArticleSubitem">
+                                <span class="siteBodyArticleItemDesc siteBodyArticleSubitemElement">
+                                    {{
+                                        item.desc
+                                    }}
+                                </span>
+                                <span class="readItemMore siteBodyArticleSubitemElement" @click="readItem(item)">
+                                    Читать полностью
+                                </span>
+                            </div>
                         </div>
                     </div>
-                    <div class="siteBodyArticleItem">
+                    <div v-else>
+                        <span>
+                            Еще не опубликована ни 1 запись...
+                        </span>
+                    </div>
+                    <div class="siteBodyArticleItem" v-if="isAdmin">
                         <span class="siteBodyArticleItemHeader markupElement">
                             {{
                                 `Новость ${items.length + 1}`
@@ -145,7 +166,7 @@
         <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
             <span class="siteHeaderItem siteHeaderLabel">
                 {{
-                    'ПОмощ'
+                    'О нас'
                 }}
             </span>
             <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
@@ -193,6 +214,167 @@
                                         siteData.about.resident
                                     }}
                                 </span>
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
+                                    edit
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="siteFooter">
+            <span>
+                &copy;
+            </span>
+            <span>
+                {{
+                    siteData.company
+                }}
+            </span>
+        </div>
+    </div>
+    <div class="site" v-else-if="activeTab === 'register'">
+        <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
+            <span class="siteHeaderItem siteHeaderLabel">
+                {{
+                    'Регистрация'
+                }}
+            </span>
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
+        </div>
+        <div class="siteBody">
+            <div class="siteBodyAside">
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'main'">
+                    logout
+                </span>
+            </div>
+            <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
+                <div>
+                    <div class="siteBodyArticleItem">
+                        <div class="siteBodyArticleSubitemColumn">
+                            <div class="siteBodyArticleSubitem">
+                                <span class="siteBodyArticleItemHeader">
+                                    {{
+                                        'Пройдите регистрацию'
+                                    }}
+                                </span>
+                            </div>
+                            <div class="siteBodyArticleSubitem">
+                                <input placeholder="Введите email" v-model="login" type="text" class="form-control w-50 m-3">
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditTaglineDialog">
+                                    edit
+                                </span>
+                            </div>    
+                            <div class="siteBodyArticleSubitem">
+                                <input placeholder="Введите пароль" v-model="password" type="password" class="form-control w-50 m-3">
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
+                                    edit
+                                </span>
+                            </div>
+                            <div class="siteBodyArticleSubitem">
+                                <button class="btn btn-primary w-25 m-3" @click="createUser">
+                                    Зарегестрироваться
+                                </button>
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
+                                    edit
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="siteFooter">
+            <span>
+                &copy;
+            </span>
+            <span>
+                {{
+                    siteData.company
+                }}
+            </span>
+        </div>
+    </div>
+    <div class="site" v-else-if="activeTab === 'location'">
+        <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
+            <span class="siteHeaderItem siteHeaderLabel">
+                {{
+                    'Найти нас на карте'
+                }}
+            </span>
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
+        </div>
+        <div class="siteBody">
+            <div class="siteBodyAside">
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'main'">
+                    logout
+                </span>
+            </div>
+            <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
+                <div>
+                    <div class="siteBodyArticleItem">
+                        <div class="siteBodyArticleSubitemColumn">
+                            <div class="siteBodyArticleSubitem">
+                                <div class="map">
+
+                                </div>
+                            </div>
+                            <div class="siteBodyArticleSubitem">
+                                <span>
+                                    Мы находимся: {{
+                                        siteData.about.resident
+                                    }}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="siteFooter">
+            <span>
+                &copy;
+            </span>
+            <span>
+                {{
+                    siteData.company
+                }}
+            </span>
+        </div>
+    </div>
+    <div class="site" v-else-if="activeTab === 'feedback'">
+        <div class="siteHeader" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(50, 50, 150)' : 'rgb(0, 0, 0)'}`">
+            <span class="siteHeaderItem siteHeaderLabel">
+                {{
+                    'Задайте на вопрос'
+                }}
+            </span>
+            <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" :alt="siteData.logo" />
+        </div>
+        <div class="siteBody">
+            <div class="siteBodyAside">
+                <span class="material-icons siteBodyAsideItem" @click="activeTab = 'main'">
+                    logout
+                </span>
+            </div>
+            <div class="siteBodyArticle" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(170, 170, 100)' : 'rgb(70, 70, 70)'}`">
+                <div>
+                    <div class="siteBodyArticleItem">
+                        <div class="siteBodyArticleSubitemColumn">
+                            <div class="siteBodyArticleSubitem">
+                                <input placeholder="Введите ваш вопрос" v-model="feedback" type="text" class="form-control w-50 m-3">
+                                <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditBusinessDialog">
+                                    edit
+                                </span>
+                            </div>
+                            <div class="siteBodyArticleSubitem">
+                                <button class="btn btn-primary w-25 m-3" @click="askQuestion">
+                                    Оставить вопрос
+                                </button>
                                 <span v-if="isAdmin" class="material-icons addItemBtn btn btn-primary" @click="setIsEditResidentDialog">
                                     edit
                                 </span>
@@ -286,7 +468,10 @@ export default {
         return {
             currentPage: 1,
             message: '',
-            activeTab: 'main'
+            activeTab: 'main',
+            login: '',
+            password: '',
+            feedback: ''
         }
     },
     emits: [
@@ -302,6 +487,53 @@ export default {
         'setIsEditResidentDialog'
     ],
     methods: {
+        askQuestion() {
+            
+        },
+        setAuthenticate() {
+            if(this.isAdmin) {
+                this.activeTab = 'register'
+            } else {
+                alert('Вы покидаете сайт')
+            }
+        },
+        createUser() {
+            
+            fetch(`http://localhost:4000/api/sites/users/add/?userlogin=${this.login}&userpassword=${this.password}`, {
+                mode: 'cors',
+                method: 'GET'
+            }).then(response => response.body).then(rb  => {
+                const reader = rb.getReader()
+                return new ReadableStream({
+                start(controller) {
+                    function push() {
+                    reader.read().then( ({done, value}) => {
+                        if (done) {
+                        console.log('done', done);
+                        controller.close();
+                        return;
+                        }
+                        controller.enqueue(value);
+                        console.log(done, value);
+                        push();
+                    })
+                    }
+                    push();
+                }
+                });
+            }).then(stream => {
+                return new Response(stream, { headers: { "Content-Type": "text/html" } }).text();
+            })
+            .then(async result => {
+                if(JSON.parse(result).status === 'OK') {
+                    this.activeTab = 'main'
+                } else {
+                    alert('не удается добавить пользователя')
+                }
+
+            })
+
+        },
         setIsEditResidentDialog() {
             this.$emit('setIsEditResidentDialog')
         },
@@ -312,6 +544,7 @@ export default {
             this.$emit('setIsEditTaglineDialog')
         },
         sendMessage() {
+            
             this.activeItem.comments.push({
                 author: 'Admin',
                 message: this.message
@@ -320,6 +553,7 @@ export default {
             this.siteData.items = this.items
             let strinableSiteData = JSON.stringify(this.siteData)
             window.localStorage.setItem('lordres-site-data', strinableSiteData)
+
         },
         setIsEditLogoDialog() {
             this.$emit('setIsEditLogoDialog')
@@ -545,6 +779,13 @@ export default {
         color: rgb(0, 0, 0);
         font-weight: bolder;
         margin: 15px 0px;
+    }
+
+    .map {
+        width: 85%;
+        margin: auto;
+        height: 300px;
+        background-color: rgb(255, 255, 255);
     }
 
 </style>

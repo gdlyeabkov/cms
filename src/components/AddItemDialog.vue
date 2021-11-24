@@ -42,7 +42,13 @@ export default {
         items: {
             type: Array,
             default: []
-        }
+        },
+        siteData: {
+            type: Object,
+            default: {
+                
+            }
+        },
     },
     emits: [
         'addItem',
@@ -50,14 +56,47 @@ export default {
     ],
     methods: {
         createItem() {
-            let pk = this.items.length + 1
-            let newItem = {
-                id: pk,
-                title: this.title,
-                desc: this.desc,
-                comments: []
-            }
-            this.$emit('addItem', newItem)
+            
+            fetch(`http://localhost:4000/api/sites/articles/add/?articletitle=${this.title}&articledesc=${this.desc}&dbaccesstoken=${this.siteData.dbAccessToken}`, {
+                mode: 'cors',
+                method: 'GET'
+            }).then(response => response.body).then(rb  => {
+                const reader = rb.getReader()
+                return new ReadableStream({
+                start(controller) {
+                    function push() {
+                    reader.read().then( ({done, value}) => {
+                        if (done) {
+                        console.log('done', done);
+                        controller.close();
+                        return;
+                        }
+                        controller.enqueue(value);
+                        console.log(done, value);
+                        push();
+                    })
+                    }
+                    push();
+                }
+                });
+            }).then(stream => {
+                return new Response(stream, { headers: { "Content-Type": "text/html" } }).text();
+            })
+            .then(async result => {
+                if(JSON.parse(result).status === 'OK') {
+                    let pk = this.items.length + 1
+                    let newItem = {
+                        id: pk,
+                        title: this.title,
+                        desc: this.desc,
+                        comments: []
+                    }
+                    this.$emit('addItem', newItem)
+                } else {
+                    alert('не удается добавить статью')
+                }
+            })
+            
         }
     }
 }
