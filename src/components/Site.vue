@@ -32,7 +32,7 @@
                 </span>
                 <span class="material-icons siteBodyAsideItem" @click="setAuthenticate">
                     {{
-                        !isAdmin ?
+                        webmaster.length >= 1 ?
                             'logout'
                         :
                             'add'
@@ -153,9 +153,15 @@
                         </div>
                         <textarea class="form-control" placeholder="Введите сообщение" v-model="message"></textarea>
                         <div class="sendMessageBtnContainer ">
-                            <button class="btn btn-primary w-25" @click="sendMessage">
+                            <button :disabled="webmaster.length <= 0"  class="btn btn-primary w-25" @click="sendMessage">
                                 Отправить
                             </button>
+                            <span class="m-2">
+                                Сообщений: 
+                                {{
+                                    activeItem.comments.length        
+                                }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -505,9 +511,11 @@ export default {
             
         },
         setAuthenticate() {
-            if(this.isAdmin) {
+            if(this.webmaster.length <= 0) {
                 this.activeTab = 'register'
             } else {
+                this.$emit('setWebmaster', '')
+                // this.webmaster = ''
                 alert('Вы покидаете сайт')
             }
         },

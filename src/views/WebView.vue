@@ -1,6 +1,6 @@
 <template>
-    <Site v-if="isAuth && !isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :isAuth="isAuth" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
-    <Site v-else-if="isAuth && isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :isAuth="isAuth" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" />
+    <Site v-if="isAuth && !isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" />
+    <Site v-else-if="isAuth && isDetailItem" :isAdmin="false" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" />
     <Auth v-else :siteData="siteData" @setAuth="setAuthHandler" />    
 </template>
 
@@ -17,6 +17,7 @@ export default {
     name: 'WebView',
     data() {
         return {
+            webmaster: 'admin',
             items: [
                 {
                     id: 1,
@@ -75,6 +76,74 @@ export default {
         this.items = this.siteData.items
     },
     methods: {
+        editResidentHandler(resident) {
+            this.isEditResidentDialog = false
+            
+            this.siteData.about.resident = resident
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditResidentDialogHandler() {
+            this.isEditResidentDialog = false
+        },
+        setIsEditResidentDialogHandler() {
+            this.isEditResidentDialog = !this.isEditResidentDialog
+        },
+        editBusinessHandler(business) {
+            this.isEditBusinessDialog = false
+            
+            this.siteData.about.business = business
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditBusinessDialogHandler() {
+            this.isEditBusinessDialog = false
+        },
+        setIsEditBusinessDialogHandler() {
+            this.isEditBusinessDialog = !this.isEditBusinessDialog
+        },
+        editTaglineHandler(tagline) {
+            this.isEditTaglineDialog = false
+            
+            this.siteData.about.tagline = tagline
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditTaglineDialogHandler() {
+            this.isEditTaglineDialog = false
+        },
+        setIsEditTaglineDialogHandler() {
+            this.isEditTaglineDialog = !this.isEditTaglineDialog
+        },
+        editLogoHandler(siteLogo) {
+            this.isEditLogoDialog = false
+            
+            this.siteData.logo = siteLogo
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        closeEditLogoDialogHandler() {
+            this.isEditLogoDialog = false
+        },
+        setIsEditLogoDialogHandler() {
+            this.isEditLogoDialog = !this.isEditLogoDialog
+        },
+        closeEditNameDialogHandler() {
+            this.isEditNameDialog = false
+        },
+        setIsEditNameDialogHandler() {
+            this.isEditNameDialog = !this.isEditNameDialog
+        },
+        editNameHandler(siteName) {
+            this.isEditNameDialog = false
+            
+            this.siteData.name = siteName
+            let strinableSiteData = JSON.stringify(this.siteData)
+            window.localStorage.setItem('lordres-site-data', strinableSiteData)
+        },
+        setWebmasterHandler(user) {
+            this.webmaster = user
+        },
         fromDetailToMainHandler() {
             this.isDetailItem = false
         },
@@ -124,6 +193,7 @@ export default {
         setAuthHandler(authToggler, webmaster) {
             console.log(`выключаю вход`)
             this.isAuth = authToggler
+            this.webmaster = webmaster
             this.token = jwt.sign({
                 webmaster: webmaster
             }, 'lordressecret', { expiresIn: '5m' })
