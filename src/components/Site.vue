@@ -60,7 +60,7 @@
                                 }}
                             </span>
                             <div class="siteBodyArticleSubitem">
-                                <span class="siteBodyArticleItemDesc siteBodyArticleSubitemElement">
+                                <span class="siteBodyArticleItemDesc siteBodyArticleSubitemElement" :style="`color: ${siteData.theme === 'light' ? 'rgb(75, 75, 75)' : 'rgb(255, 255, 255)'};`">
                                     {{
                                         item.desc
                                     }}
@@ -421,6 +421,25 @@
                                     edit
                                 </span>
                             </div>
+                            <div v-if="isAdmin && siteData.admin.login === webmaster">
+                                <div v-if="siteData.feedback.questions.length >= 1" class="question" v-for="question in siteData.feedback.questions" :key="question">
+                                    <span >
+                                        {{
+                                            question.question
+                                        }}
+                                    </span>
+                                    <span class="questionAuthor">
+                                        (Спрашивает {{
+                                            question.asker
+                                        }})
+                                    </span>
+                                </div>
+                                <div v-else>
+                                    <span>
+                                        Вопросов к вам нет.
+                                    </span>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -537,6 +556,7 @@ export default {
         'setIsEditFeedbackLabelBtnDialog',
         'setIsEditFeedbackPlaceholderDialog',
         'setIsEditAdminLoginDialog',
+        'setAuth'
     ],
     methods: {
         likeItem() {
@@ -605,6 +625,7 @@ export default {
             .then(async result => {
                 if(JSON.parse(result).status === 'OK') {
                     this.activeTab = 'main'
+                    this.$emit('setAuth', false, '')
                 } else {
                     if(this.siteData.notifications) {
                         alert('Не удается добавить пользователя')
@@ -900,6 +921,17 @@ export default {
     .errors {
         color: rgb(225, 0, 0);
         font-weight: bolder;
+    }
+
+    .question {
+        display: flex;
+        flex-direction: column;
+        font-weight: bolder;
+        margin: 10px 0px;
+    }
+
+    .questionAuthor {
+        color: rgb(235, 0, 0);
     }
 
 </style>

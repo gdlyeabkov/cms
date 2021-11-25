@@ -11,7 +11,7 @@
                         image
                     </span>
                 </div>
-                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" @setIsEditFeedbackPlaceholderDialog="setIsEditFeedbackPlaceholderDialogHandler" @setIsEditFeedbackLabelBtnDialog="setIsEditFeedbackLabelBtnDialogHandler" @setIsEditAdminLoginDialog="setIsEditAdminLoginDialogHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" @setIsEditFeedbackPlaceholderDialog="setIsEditFeedbackPlaceholderDialogHandler" @setIsEditFeedbackLabelBtnDialog="setIsEditFeedbackLabelBtnDialogHandler" @setIsEditAdminLoginDialog="setIsEditAdminLoginDialogHandler" @setAuth="setAuthHandler" />
             </div>
             <Footer />
         </div>
@@ -32,7 +32,7 @@
                 <div class="aside">
 
                 </div>
-                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" @setIsEditFeedbackPlaceholderDialog="setIsEditFeedbackPlaceholderDialogHandler" @setIsEditFeedbackLabelBtnDialog="setIsEditFeedbackLabelBtnDialogHandler" @setIsEditAdminLoginDialog="setIsEditAdminLoginDialogHandler" />
+                <Site :isAdmin="true" :siteData="siteData" :items="items" :isDetailItem="isDetailItem" :activeItem="activeItem" :webmaster="webmaster" @readItem="readItem" @setIsAddItemDialog="setIsAddItemDialogHandler" @setIsEditItemDialog="setIsEditItemDialogHandler" @removeItem="removeItem" @fromDetailToMain="fromDetailToMainHandler" @setIsEditNameDialog="setIsEditNameDialogHandler" @setIsEditLogoDialog="setIsEditLogoDialogHandler" @setIsEditTaglineDialog="setIsEditTaglineDialogHandler" @setIsEditBusinessDialog="setIsEditBusinessDialogHandler" @setIsEditResidentDialog="setIsEditResidentDialogHandler" @setWebmaster="setWebmasterHandler" @setIsEditFeedbackPlaceholderDialog="setIsEditFeedbackPlaceholderDialogHandler" @setIsEditFeedbackLabelBtnDialog="setIsEditFeedbackLabelBtnDialogHandler" @setIsEditAdminLoginDialog="setIsEditAdminLoginDialogHandler" @setAuth="setAuthHandler" />
             </div>
             <Footer />
         </div>
@@ -353,13 +353,22 @@ export default {
 
         },
         setAuthHandler(authToggler, webmaster) {
-            console.log(`выключаю вход`)
+            
             this.isAuth = authToggler
             this.webmaster = webmaster
-            this.token = jwt.sign({
-                webmaster: webmaster
-            }, 'lordressecret', { expiresIn: '5m' })
+            if (authToggler) {
+                console.log(`выключаю вход`)
+                this.token = jwt.sign({
+                    webmaster: webmaster
+                }, 'lordressecret', { expiresIn: '5m' })
+            } else if (!authToggler) {
+                console.log(`включаю вход`)
+                this.token = jwt.sign({
+                    webmaster: webmaster
+                }, 'lordressecret', { expiresIn: 0 })
+            }
             window.localStorage.setItem('lordrestoken', this.token)
+
         }
     },
     components: {

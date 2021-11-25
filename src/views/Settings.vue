@@ -2,7 +2,7 @@
     <div>
         <Header />
         <div class="main" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(100, 100, 100)' : 'rgb(65, 40, 50)'}`">
-            <span class="material-icons siteBodyAsideItem" @click="$router.push({ name: 'CPanel' })">
+            <span class="material-icons siteBodyAsideItem" @click="$router.push({ name: 'CPanel' })" :style="`color: ${siteData.theme === 'light' ? 'rgb(230, 0, 0)' : 'rgb(255, 255, 255)'};`">
                 logout
             </span>
             <div class="settingsItem">

@@ -1,6 +1,16 @@
 <template>
     <div class="authFormGround" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(235, 235, 235)' : 'rgb(35, 35, 75)'}`">
         <div class="authForm" :style="`background-color: ${siteData.theme === 'light' ? 'rgb(215, 215, 215)' : 'rgb(15, 35, 25)'}`">
+            <div class="modeToggler">
+                <button class="btn btn-primary modeTogglerBtn" @click="$route.path === '/cpanel/webview' ? $router.push({ name: 'CPanel' }) : $router.push({ name: 'WebView' })">
+                    {{
+                        $route.path === '/cpanel/webview' ?
+                            'Редактор'
+                        :
+                            'Сайт'
+                    }}
+                </button>
+            </div>
             <img class="siteHeaderItem siteHeaderLogo" :src="siteData.logo" width="100px" :alt="siteData.logo" />
             <span class="authFormHeader">
                 Войдите на свой сайт        
@@ -171,5 +181,14 @@ export default {
         font-weight: bolder;
     }
 
+    .modeToggler {
+        display: flex;
+        justify-content: flex-end;
+        width: 100%;
+    }
+
+    .modeTogglerBtn {
+        width: 150px;
+    }
 
 </style>

@@ -217,7 +217,7 @@ app.get('/api/sites/users/add', (req, res) => {
   
 })
 
-app.get('/api/sites/users/check', (req,res)=>{
+app.get('/api/sites/users/check', (req,res) => {
     
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Credentials', true);
